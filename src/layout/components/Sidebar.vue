@@ -39,7 +39,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Fold, Expand } from '@element-plus/icons-vue'
 import { useAppStore } from '@/stores/app'
-import { constantRoutes, asyncRoutes } from '@/router'
+import menuData from '@/config/menus.json'
 import SidebarItem from './SidebarItem.vue'
 
 const route = useRoute()
@@ -48,10 +48,21 @@ const appStore = useAppStore()
 
 const isCollapsed = computed(() => appStore.sidebarCollapsed)
 
-// 合并静态路由和动态路由，过滤隐藏路由
+// 从 JSON 文件读取菜单数据，转换为路由格式（将 title/icon/affix 等包装到 meta 中）
 const menuRoutes = computed(() => {
-  const allRoutes = [...constantRoutes, ...asyncRoutes]
-  return allRoutes.filter((item) => !item.meta?.hidden)
+  function transform(item) {
+    const result = { path: item.path }
+    const meta = {}
+    if (item.title) meta.title = item.title
+    if (item.icon) meta.icon = item.icon
+    if (item.affix) meta.affix = item.affix
+    if (Object.keys(meta).length) result.meta = meta
+    if (item.children?.length) {
+      result.children = item.children.map(transform)
+    }
+    return result
+  }
+  return menuData.map(transform)
 })
 
 // 当前激活菜单
