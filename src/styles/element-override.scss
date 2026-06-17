@@ -1,0 +1,80 @@
+// Element Plus 样式覆盖
+
+// ==================== 侧边栏菜单 ====================
+.el-menu {
+  border-right: none !important;
+}
+
+.el-menu--collapse {
+  width: var(--sidebar-collapsed-width) !important;
+}
+
+// ==================== 表格 ====================
+.el-table {
+  .el-table__header th {
+    background-color: #fafafa !important;
+    font-weight: 600;
+    color: var(--text-primary) !important;
+  }
+}
+
+// ==================== 分页 ====================
+.el-pagination {
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+// ==================== 对话框 ====================
+.el-dialog {
+  .el-dialog__header {
+    border-bottom: 1px solid var(--border-color-lighter);
+    padding: 16px 20px;
+    margin-right: 0;
+  }
+
+  .el-dialog__body {
+    padding: 20px;
+  }
+
+  .el-dialog__footer {
+    border-top: 1px solid var(--border-color-lighter);
+    padding: 12px 20px;
+  }
+}
+
+// ==================== 卡片 ====================
+.el-card {
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--box-shadow-light);
+
+  .el-card__header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border-color-lighter);
+  }
+}
+
+// ==================== 表单 ====================
+.el-form--label-top .el-form-item__label {
+  padding-bottom: 4px;
+}
+
+// ==================== 按钮 ====================
+.el-button + .el-button {
+  margin-left: 8px;
+}
+
+// ==================== 下拉菜单 ====================
+.el-dropdown-menu__item {
+  padding: 6px 16px;
+}
+
+// ==================== Tag ====================
+.el-tag {
+  border-radius: 4px;
+}
+
+// ==================== 消息提示 ====================
+.el-message {
+  min-width: 300px;
+  box-shadow: var(--box-shadow-dark);
+}

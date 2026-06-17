@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Local env files
+.env.local
+.env.*.local
+
+# Auto-generated
+auto-imports.d.ts
+src/auto-imports.d.ts
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+*.swp
+*.swo
+
+# JoyCode
+.joycode/
+
+# Misc
+提示词.md
