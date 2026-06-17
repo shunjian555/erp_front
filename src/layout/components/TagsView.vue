@@ -139,7 +139,7 @@ onMounted(() => {
 .tags-view-container {
   height: var(--tagsview-height);
   width: 100%;
-  background: #fff;
+  background: var(--bg-color);
   border-bottom: 1px solid var(--border-color-lighter);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06);
   position: relative;
@@ -208,7 +208,7 @@ onMounted(() => {
   list-style-type: none;
   padding: 5px 0;
   margin: 0;
-  background: #fff;
+  background: var(--bg-color-overlay);
   border-radius: 4px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
   font-size: 13px;
@@ -219,7 +219,7 @@ onMounted(() => {
     color: var(--text-regular);
 
     &:hover {
-      background-color: #f5f7fa;
+      background-color: var(--bg-color-page);
       color: var(--primary-color);
     }
   }

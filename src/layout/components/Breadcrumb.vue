@@ -56,7 +56,7 @@ watch(
 
   :deep(.el-breadcrumb__separator) {
     margin: 0 6px;
-    color: #c0c4cc;
+    color: var(--text-placeholder);
     font-size: 12px;
   }
 

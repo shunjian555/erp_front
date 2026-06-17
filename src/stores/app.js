@@ -33,7 +33,7 @@ export const useAppStore = defineStore('app', () => {
   function toggleTheme() {
     theme.value = theme.value === 'light' ? 'dark' : 'light'
     localStorage.setItem('erp_theme', theme.value)
-    document.documentElement.setAttribute('data-theme', theme.value)
+    document.documentElement.classList.toggle('dark', theme.value === 'dark')
   }
 
   return {

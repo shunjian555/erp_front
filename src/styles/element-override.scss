@@ -78,3 +78,75 @@
   min-width: 300px;
   box-shadow: var(--box-shadow-dark);
 }
+
+// ==================== 暗色主题覆盖 ====================
+html.dark {
+  // 表格
+  .el-table {
+    --el-table-bg-color: var(--bg-color-overlay);
+    --el-table-tr-bg-color: var(--bg-color-overlay);
+    --el-table-header-bg-color: #1d1e1f;
+    --el-table-row-hover-bg-color: #262627;
+    --el-table-border-color: var(--border-color);
+
+    .el-table__header th {
+      background-color: #1d1e1f !important;
+    }
+  }
+
+  // 对话框
+  .el-dialog {
+    --el-dialog-bg-color: var(--bg-color-overlay);
+  }
+
+  // 卡片
+  .el-card {
+    --el-card-bg-color: var(--bg-color-overlay);
+  }
+
+  // 输入框
+  .el-input__wrapper {
+    background-color: var(--bg-color-overlay);
+    box-shadow: 0 0 0 1px var(--border-color) inset;
+  }
+
+  // 选择器
+  .el-select .el-input.is-focus .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--primary-color) inset;
+  }
+
+  // 分页
+  .el-pagination {
+    --el-pagination-bg-color: var(--bg-color-overlay);
+    --el-pagination-button-bg-color: var(--bg-color-overlay);
+  }
+
+  // 下拉菜单
+  .el-dropdown-menu {
+    background-color: var(--bg-color-overlay);
+  }
+
+  // Popover
+  .el-popover {
+    --el-popover-bg-color: var(--bg-color-overlay);
+  }
+
+  // 表单
+  .el-form-item__label {
+    color: var(--text-regular);
+  }
+
+  // 面包屑
+  .el-breadcrumb__inner {
+    color: var(--text-regular);
+  }
+
+  // 滚动条
+  ::-webkit-scrollbar-thumb {
+    background: #414243;
+
+    &:hover {
+      background: #555;
+    }
+  }
+}

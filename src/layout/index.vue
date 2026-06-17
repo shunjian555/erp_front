@@ -1,6 +1,6 @@
 <template>
   <div class="layout-container">
-    <Sidebar class="sidebar-container" />
+    <Sidebar class="sidebar-container" :class="{ 'sidebar-collapsed': isCollapsed }" />
     <div class="main-container" :class="{ 'sidebar-collapsed': isCollapsed }">
       <Header class="header-container" />
       <TagsView v-if="showTagsView" />
@@ -40,6 +40,10 @@ const showTagsView = computed(() => true)
   transition: width var(--transition-duration);
   background-color: #001529;
   overflow: hidden;
+
+  &.sidebar-collapsed {
+    width: var(--sidebar-collapsed-width);
+  }
 }
 
 .main-container {

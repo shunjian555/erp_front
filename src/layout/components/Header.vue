@@ -14,12 +14,12 @@
     <!-- 右侧 -->
     <div class="navbar-right">
       <!-- 搜索 -->
-      <el-tooltip content="全局搜索" placement="bottom" :show-after="300">
+      <!-- <el-tooltip content="全局搜索" placement="bottom" :show-after="300">
         <div class="navbar-action search-trigger" @click="handleSearch">
           <el-icon :size="16"><Search /></el-icon>
           <span class="search-hint">Ctrl+K</span>
         </div>
-      </el-tooltip>
+      </el-tooltip> -->
 
       <!-- 全屏切换 -->
       <el-tooltip content="全屏" placement="bottom" :show-after="300">
@@ -193,7 +193,7 @@ async function handleCommand(command) {
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  background-color: #fff;
+  background-color: var(--bg-color);
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.06);
   z-index: 10;
   position: relative;
@@ -220,6 +220,12 @@ async function handleCommand(command) {
     background-color: rgba(0, 0, 0, 0.04);
     color: var(--text-primary);
   }
+
+  html.dark & {
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+  }
 }
 
 .navbar-right {
@@ -244,18 +250,24 @@ async function handleCommand(command) {
     color: var(--primary-color);
   }
 
+  html.dark & {
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+  }
+
   &.search-trigger {
     width: auto;
     padding: 0 10px;
     gap: 6px;
     border-radius: 8px;
-    border: 1px solid #e4e7ed;
+    border: 1px solid var(--border-color-light);
     font-size: 13px;
 
     .search-hint {
       font-size: 11px;
-      color: #c0c4cc;
-      background: #f2f3f5;
+      color: var(--text-placeholder);
+      background: var(--bg-color-page);
       padding: 1px 5px;
       border-radius: 4px;
     }
@@ -279,7 +291,7 @@ async function handleCommand(command) {
 .nav-divider {
   width: 1px;
   height: 18px;
-  background-color: #e4e7ed;
+  background-color: var(--border-color-light);
   margin: 0 8px;
 }
 
@@ -294,6 +306,12 @@ async function handleCommand(command) {
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.03);
+  }
+
+  html.dark & {
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
   }
 
   .user-avatar {
@@ -315,7 +333,7 @@ async function handleCommand(command) {
   }
 
   .arrow-icon {
-    color: #c0c4cc;
+    color: var(--text-placeholder);
     transition: transform 0.25s ease;
   }
 
@@ -338,12 +356,12 @@ async function handleCommand(command) {
     align-items: center;
     justify-content: space-between;
     padding: 14px 18px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-color-lighter);
 
     .title {
       font-size: 15px;
       font-weight: 600;
-      color: #303133;
+      color: var(--text-primary);
     }
   }
 
@@ -360,18 +378,22 @@ async function handleCommand(command) {
     transition: all 0.2s;
 
     &:hover {
-      background-color: #fafafa;
+      background-color: var(--bg-color-page);
     }
 
     &.unread {
       background-color: #f8faff;
     }
 
+    html.dark &.unread {
+      background-color: rgba(64, 158, 255, 0.08);
+    }
+
     .notify-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #e4e7ed;
+      background: var(--border-color-light);
       margin-top: 6px;
       margin-right: 12px;
       flex-shrink: 0;
@@ -390,13 +412,13 @@ async function handleCommand(command) {
       .notify-title {
         font-size: 13px;
         font-weight: 500;
-        color: #303133;
+        color: var(--text-primary);
         margin-bottom: 4px;
       }
 
       .notify-desc {
         font-size: 12px;
-        color: #909399;
+        color: var(--text-secondary);
         line-height: 1.5;
         margin-bottom: 4px;
         display: -webkit-box;
@@ -407,7 +429,7 @@ async function handleCommand(command) {
 
       .notify-time {
         font-size: 11px;
-        color: #c0c4cc;
+        color: var(--text-placeholder);
       }
     }
   }
@@ -423,6 +445,10 @@ async function handleCommand(command) {
     padding: 16px 20px;
     background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ed 100%);
 
+    html.dark & {
+      background: linear-gradient(135deg, #262627 0%, #363637 100%);
+    }
+
     .el-avatar {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       font-size: 18px;
@@ -434,13 +460,13 @@ async function handleCommand(command) {
       .name {
         font-size: 14px;
         font-weight: 600;
-        color: #303133;
+        color: var(--text-primary);
         margin-bottom: 2px;
       }
 
       .role {
         font-size: 12px;
-        color: #909399;
+        color: var(--text-secondary);
       }
     }
   }
@@ -454,11 +480,11 @@ async function handleCommand(command) {
 
     .el-icon {
       font-size: 15px;
-      color: #909399;
+      color: var(--text-secondary);
     }
 
     &:hover {
-      background-color: #f5f7fa;
+      background-color: var(--bg-color-page);
       color: var(--primary-color);
 
       .el-icon {

@@ -220,6 +220,15 @@ function handleMenuSelect(index) {
     }
   }
 
+  // 暗色主题下侧边栏加深背景
+  html.dark & {
+    background-color: #000000;
+
+    .logo-container {
+      border-bottom-color: rgba(255, 255, 255, 0.06);
+    }
+  }
+
   // 折叠状态下的子菜单弹出层
   :deep(.el-menu--collapse) {
     .el-sub-menu__title {

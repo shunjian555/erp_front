@@ -12,6 +12,12 @@ import { setupDirectives } from '../directives/index'
 
 const app = createApp(App)
 
+// 初始化主题
+const savedTheme = localStorage.getItem('erp_theme')
+if (savedTheme === 'dark') {
+  document.documentElement.classList.add('dark')
+}
+
 // 注册所有图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
