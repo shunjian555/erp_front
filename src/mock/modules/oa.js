@@ -42,8 +42,9 @@ export default [
       approvalNo: `AP${Random.string('number', 8)}`, title: '{{title}}',
       type: ['采购审批','费用报销','请假申请','出差申请','合同审批'],
       applicant: genCName(),
-      department: ['技术部','销售部','市场部','财务部','人事部'],
-      status: [0, 1, 2], createTime: '{{date}}'
+      dept: ['技术部','销售部','市场部','财务部','人事部'],
+      applyTime: '{{date}}',
+      status: [0, 1, 2]
     }})
   },
   // 请假申请
@@ -51,7 +52,7 @@ export default [
     url: '/api/oa/leave/list',
     method: 'get',
     response: () => genList({ total: 45, recordName: '请假单', fields: {
-      leaveNo: `LV${Random.string('number', 8)}`, applicant: genCName(),
+      title: '{{title}}', leaveNo: `LV${Random.string('number', 8)}`, applicant: genCName(),
       leaveType: ['年假','事假','病假','婚假','产假'],
       startDate: Random.datetime('yyyy-MM-dd HH:mm'),
       endDate: Random.datetime('yyyy-MM-dd HH:mm'),
@@ -65,8 +66,8 @@ export default [
     url: '/api/oa/expense/list',
     method: 'get',
     response: () => genList({ total: 78, recordName: '报销单', fields: {
-      expenseNo: `EX${Random.string('number', 8)}`, applicant: genCName(),
-      category: ['差旅费','办公费','招待费','交通费','通讯费'],
+      title: '{{title}}', expenseNo: `EX${Random.string('number', 8)}`, applicant: genCName(),
+      expenseType: ['差旅费','办公费','招待费','交通费','通讯费'],
       amount: '{{amount}}', description: Random.cparagraph(1, 2),
       status: [0, 1, 2], createTime: '{{date}}'
     }})
@@ -76,10 +77,10 @@ export default [
     url: '/api/oa/purchaseReq/list',
     method: 'get',
     response: () => genList({ total: 32, recordName: '采购申请', fields: {
-      requestNo: `PR${Random.string('number', 8)}`, goodsName: '{{title}}',
+      reqNo: `PR${Random.string('number', 8)}`, goodsName: '{{title}}',
       quantity: Random.integer(1, 100), budgetAmount: '{{amount}}',
       reason: Random.cparagraph(1, 2), applicant: genCName(),
-      status: [0, 1, 2, 3], createTime: '{{date}}'
+      status: [0, 1, 2, 3], applyDate: Random.datetime('yyyy-MM-dd')
     }})
   },
   // 公告管理
@@ -87,10 +88,10 @@ export default [
     url: '/api/oa/notice/list',
     method: 'get',
     response: () => genList({ total: 25, recordName: '公告', fields: {
-      noticeTitle: '{{title}}', content: Random.cparagraph(2, 4),
+      title: '{{title}}', content: Random.cparagraph(2, 4),
       publisher: genCName(), type: ['通知','公告','新闻'],
       isTop: [0, 1], readCount: Random.integer(50, 500),
-      createTime: '{{date}}'
+      publishTime: '{{date}}'
     }})
   },
   // 消息中心
