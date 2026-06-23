@@ -15,7 +15,10 @@
       { "path": "/crm/lead", "title": "线索管理", "icon": "Connection" },
       { "path": "/crm/opportunity", "title": "商机管理", "icon": "TrendCharts" },
       { "path": "/crm/quote", "title": "报价管理", "icon": "Document" },
-      { "path": "/crm/contract", "title": "合同管理", "icon": "Tickets" }
+      { "path": "/crm/contract", "title": "合同管理", "icon": "Tickets" },
+      { "path": "/crm/follow", "title": "跟进记录", "icon": "ChatLineRound" },
+      { "path": "/crm/pool", "title": "客户公海", "icon": "DataBoard" },
+      { "path": "/crm/receivable-plan", "title": "回款计划", "icon": "Coin" }
     ]
   },
   {
@@ -28,7 +31,13 @@
       { "path": "/oa/expense", "title": "报销申请", "icon": "Wallet" },
       { "path": "/oa/purchase-req", "title": "采购申请", "icon": "ShoppingCart" },
       { "path": "/oa/notice", "title": "公告管理", "icon": "Bell" },
-      { "path": "/oa/message", "title": "消息中心", "icon": "ChatDotRound" }
+      { "path": "/oa/message", "title": "消息中心", "icon": "ChatDotRound" },
+      { "path": "/oa/attendance", "title": "考勤管理", "icon": "AlarmClock" },
+      { "path": "/oa/schedule", "title": "日程管理", "icon": "Calendar" },
+      { "path": "/oa/task", "title": "任务管理", "icon": "List" },
+      { "path": "/oa/business-trip", "title": "出差申请", "icon": "Promotion" },
+      { "path": "/oa/car", "title": "用车申请", "icon": "Van" },
+      { "path": "/oa/meeting", "title": "会议管理", "icon": "VideoCamera" }
     ]
   },
   {
@@ -88,6 +97,23 @@
       { "path": "/wms/transfer", "title": "调拨管理", "icon": "Switch" },
       { "path": "/wms/batch", "title": "批次管理", "icon": "CollectionTag" },
       { "path": "/wms/barcode", "title": "条码管理", "icon": "Grid" }
+    ]
+  },
+  {
+    "path": "/production",
+    "title": "生产管理",
+    "icon": "Cpu",
+    "children": [
+      { "path": "/production/bom", "title": "BOM管理", "icon": "Document" },
+      { "path": "/production/process", "title": "工艺路线", "icon": "Share" },
+      { "path": "/production/capacity", "title": "产能数据", "icon": "DataLine" },
+      { "path": "/production/mps", "title": "主生产计划", "icon": "Calendar" },
+      { "path": "/production/mrp", "title": "物料需求计划", "icon": "Tickets" },
+      { "path": "/production/order", "title": "生产订单", "icon": "List" },
+      { "path": "/production/operation", "title": "工序管理", "icon": "Operation" },
+      { "path": "/production/workshop", "title": "车间管理", "icon": "OfficeBuilding" },
+      { "path": "/production/outsourcing", "title": "委外加工", "icon": "Connection" },
+      { "path": "/production/equipment", "title": "设备管理", "icon": "Tools" }
     ]
   },
   {

@@ -96,6 +96,24 @@ export const asyncRoutes = [
         name: 'CrmContract',
         component: () => import('@/views/crm/contract/index.vue'),
         meta: { title: '合同管理', icon: 'Tickets' }
+      },
+      {
+        path: 'follow',
+        name: 'CrmFollow',
+        component: () => import('@/views/crm/follow/index.vue'),
+        meta: { title: '跟进记录', icon: 'ChatLineRound' }
+      },
+      {
+        path: 'pool',
+        name: 'CrmPool',
+        component: () => import('@/views/crm/pool/index.vue'),
+        meta: { title: '客户公海', icon: 'DataBoard' }
+      },
+      {
+        path: 'receivable-plan',
+        name: 'CrmReceivablePlan',
+        component: () => import('@/views/crm/receivablePlan/index.vue'),
+        meta: { title: '回款计划', icon: 'Coin' }
       }
     ]
   },
@@ -142,6 +160,42 @@ export const asyncRoutes = [
         name: 'OaMessage',
         component: () => import('@/views/oa/message/index.vue'),
         meta: { title: '消息中心', icon: 'ChatDotRound' }
+      },
+      {
+        path: 'attendance',
+        name: 'OaAttendance',
+        component: () => import('@/views/oa/attendance/index.vue'),
+        meta: { title: '考勤管理', icon: 'AlarmClock' }
+      },
+      {
+        path: 'schedule',
+        name: 'OaSchedule',
+        component: () => import('@/views/oa/schedule/index.vue'),
+        meta: { title: '日程管理', icon: 'Calendar' }
+      },
+      {
+        path: 'task',
+        name: 'OaTask',
+        component: () => import('@/views/oa/task/index.vue'),
+        meta: { title: '任务管理', icon: 'List' }
+      },
+      {
+        path: 'business-trip',
+        name: 'OaBusinessTrip',
+        component: () => import('@/views/oa/businessTrip/index.vue'),
+        meta: { title: '出差申请', icon: 'Promotion' }
+      },
+      {
+        path: 'car',
+        name: 'OaCar',
+        component: () => import('@/views/oa/car/index.vue'),
+        meta: { title: '用车申请', icon: 'Van' }
+      },
+      {
+        path: 'meeting',
+        name: 'OaMeeting',
+        component: () => import('@/views/oa/meeting/index.vue'),
+        meta: { title: '会议管理', icon: 'VideoCamera' }
       }
     ]
   },
@@ -336,6 +390,76 @@ export const asyncRoutes = [
         name: 'WmsBarcode',
         component: () => import('@/views/wms/barcode/index.vue'),
         meta: { title: '条码管理', icon: 'Grid' }
+      }
+    ]
+  },
+
+  // ==================== 生产管理 (PLM/MES) ====================
+  {
+    path: '/production',
+    component: Layout,
+    redirect: '/production/bom',
+    meta: { title: '生产管理', icon: 'Cpu', roles: ['admin', 'production'] },
+    children: [
+      {
+        path: 'bom',
+        name: 'ProductionBom',
+        component: () => import('@/views/production/bom/index.vue'),
+        meta: { title: 'BOM管理', icon: 'Document' }
+      },
+      {
+        path: 'process',
+        name: 'ProductionProcess',
+        component: () => import('@/views/production/process/index.vue'),
+        meta: { title: '工艺路线', icon: 'Share' }
+      },
+      {
+        path: 'capacity',
+        name: 'ProductionCapacity',
+        component: () => import('@/views/production/capacity/index.vue'),
+        meta: { title: '产能数据', icon: 'DataLine' }
+      },
+      {
+        path: 'mps',
+        name: 'ProductionMps',
+        component: () => import('@/views/production/mps/index.vue'),
+        meta: { title: '主生产计划', icon: 'Calendar' }
+      },
+      {
+        path: 'mrp',
+        name: 'ProductionMrp',
+        component: () => import('@/views/production/mrp/index.vue'),
+        meta: { title: '物料需求计划', icon: 'Tickets' }
+      },
+      {
+        path: 'order',
+        name: 'ProductionOrder',
+        component: () => import('@/views/production/order/index.vue'),
+        meta: { title: '生产订单', icon: 'List' }
+      },
+      {
+        path: 'operation',
+        name: 'ProductionOperation',
+        component: () => import('@/views/production/operation/index.vue'),
+        meta: { title: '工序管理', icon: 'Operation' }
+      },
+      {
+        path: 'workshop',
+        name: 'ProductionWorkshop',
+        component: () => import('@/views/production/workshop/index.vue'),
+        meta: { title: '车间管理', icon: 'OfficeBuilding' }
+      },
+      {
+        path: 'outsourcing',
+        name: 'ProductionOutsourcing',
+        component: () => import('@/views/production/outsourcing/index.vue'),
+        meta: { title: '委外加工', icon: 'Connection' }
+      },
+      {
+        path: 'equipment',
+        name: 'ProductionEquipment',
+        component: () => import('@/views/production/equipment/index.vue'),
+        meta: { title: '设备管理', icon: 'Tools' }
       }
     ]
   },

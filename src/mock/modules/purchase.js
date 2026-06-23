@@ -158,6 +158,8 @@ export default [
       requestNo: `PR${Random.string('number', 8)}`, goodsName: '{{title}}',
       quantity: Random.integer(1, 200), budgetAmount: '{{amount}}',
       reason: Random.cparagraph(1, 2), applicant: genCName(),
+      department: ['采购部', '研发部', '运营部', '生产部', '行政部'],
+      applyDate: Random.datetime('yyyy-MM-dd'),
       status: [0, 1, 2, 3], createTime: '{{date}}'
     }})
   },
@@ -168,6 +170,9 @@ export default [
     response: () => genList({ total: 78, recordName: '采购订单', fields: {
       orderNo: `PO${Random.string('number', 8)}`, supplierName: '{{name}}',
       totalAmount: '{{amount}}', quantity: Random.integer(10, 500),
+      contactPerson: genCName(), phone: /^1[3-9]\d{9}$/,
+      deliveryDate: Random.datetime('yyyy-MM-dd'),
+      remark: Random.cparagraph(1, 2),
       status: [0, 1, 2, 3], createTime: '{{date}}'
     }})
   },
@@ -179,7 +184,10 @@ export default [
       inboundNo: `IN${Random.string('number', 8)}`, orderNo: `PO${Random.string('number', 8)}`,
       supplierName: '{{name}}', totalAmount: '{{amount}}',
       quantity: Random.integer(5, 300),
-      warehouse: ['主仓库','分仓库A','分仓库B'],
+      warehouse: ['主仓库', '分仓库A', '分仓库B'],
+      operator: genCName(),
+      inboundDate: Random.datetime('yyyy-MM-dd'),
+      remark: Random.cparagraph(1, 2),
       status: [0, 1], createTime: '{{date}}'
     }})
   },
@@ -190,7 +198,10 @@ export default [
     response: () => genList({ total: 18, recordName: '退货单', fields: {
       returnNo: `PUR-R${Random.string('number', 7)}`, orderNo: `PO${Random.string('number', 8)}`,
       supplierName: '{{name}}', amount: '{{amount}}',
-      reason: ['质量问题','规格不符','数量多余','其他'],
+      quantity: Random.integer(1, 100),
+      reason: ['质量问题', '规格不符', '数量多余', '其他'],
+      applicant: genCName(),
+      applyDate: Random.datetime('yyyy-MM-dd'),
       status: [0, 1], createTime: '{{date}}'
     }})
   },
@@ -201,7 +212,7 @@ export default [
     response: () => genList({ total: 32, recordName: '供应商', fields: {
       supplierName: '{{name}}', contactPerson: genCName(),
       phone: /^1[3-9]\d{9}$/, email: Random.email(),
-      address: Random.city(true), level: ['战略','核心','普通'],
+      address: Random.city(true), level: ['战略', '核心', '普通'],
       status: [0, 1], createTime: '{{date}}'
     }})
   }

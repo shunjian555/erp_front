@@ -86,5 +86,124 @@ export default [
       duration: Random.integer(10, 2000),
       createTime: '{{date}}'
     }})
+  },
+
+  // 菜单树（供左侧菜单加载使用）
+  {
+    url: '/api/system/menu/tree',
+    method: 'get',
+    response: () => {
+      // 与 menus.json 保持一致，作为后端真实接口的 mock
+      const menuTree = [
+        { path: '/dashboard', title: '工作台', icon: 'Odometer', affix: true },
+        { path: '/crm', title: 'CRM', icon: 'UserFilled', children: [
+          { path: '/crm/customer', title: '客户管理', icon: 'User' },
+          { path: '/crm/contact', title: '联系人管理', icon: 'Phone' },
+          { path: '/crm/lead', title: '线索管理', icon: 'Connection' },
+          { path: '/crm/opportunity', title: '商机管理', icon: 'TrendCharts' },
+          { path: '/crm/quote', title: '报价管理', icon: 'Document' },
+          { path: '/crm/contract', title: '合同管理', icon: 'Tickets' },
+          { path: '/crm/follow', title: '跟进记录', icon: 'ChatLineRound' },
+          { path: '/crm/pool', title: '客户公海', icon: 'DataBoard' },
+          { path: '/crm/receivable-plan', title: '回款计划', icon: 'Coin' }
+        ]},
+        { path: '/oa', title: 'OA', icon: 'Notebook', children: [
+          { path: '/oa/approval', title: '审批中心', icon: 'Checked' },
+          { path: '/oa/leave', title: '请假申请', icon: 'Calendar' },
+          { path: '/oa/expense', title: '报销申请', icon: 'Wallet' },
+          { path: '/oa/purchase-req', title: '采购申请', icon: 'ShoppingCart' },
+          { path: '/oa/notice', title: '公告管理', icon: 'Bell' },
+          { path: '/oa/message', title: '消息中心', icon: 'ChatDotRound' },
+          { path: '/oa/attendance', title: '考勤管理', icon: 'AlarmClock' },
+          { path: '/oa/schedule', title: '日程管理', icon: 'Calendar' },
+          { path: '/oa/task', title: '任务管理', icon: 'List' },
+          { path: '/oa/business-trip', title: '出差申请', icon: 'Promotion' },
+          { path: '/oa/car', title: '用车申请', icon: 'Van' },
+          { path: '/oa/meeting', title: '会议管理', icon: 'VideoCamera' }
+        ]},
+        { path: '/product', title: '商品中心', icon: 'Goods', children: [
+          { path: '/product/goods', title: '商品管理', icon: 'Box' },
+          { path: '/product/category', title: '商品分类', icon: 'Menu' },
+          { path: '/product/brand', title: '品牌管理', icon: 'Medal' },
+          { path: '/product/unit', title: '单位管理', icon: 'DataAnalysis' }
+        ]},
+        { path: '/purchase', title: '采购管理', icon: 'ShoppingCartFull', children: [
+          { path: '/purchase/request', title: '采购申请', icon: 'DocumentAdd' },
+          { path: '/purchase/order', title: '采购订单', icon: 'List' },
+          { path: '/purchase/inbound', title: '采购入库', icon: 'Box' },
+          { path: '/purchase/return', title: '采购退货', icon: 'RefreshLeft' },
+          { path: '/purchase/supplier', title: '供应商管理', icon: 'OfficeBuilding' }
+        ]},
+        { path: '/sales', title: '销售管理', icon: 'ShoppingBag', children: [
+          { path: '/sales/order', title: '销售订单', icon: 'List' },
+          { path: '/sales/outbound', title: '销售出库', icon: 'Box' },
+          { path: '/sales/return', title: '销售退货', icon: 'RefreshRight' },
+          { path: '/sales/customer', title: '客户管理', icon: 'User' }
+        ]},
+        { path: '/inventory', title: '库存管理', icon: 'House', children: [
+          { path: '/inventory/query', title: '库存查询', icon: 'Search' },
+          { path: '/inventory/flow', title: '库存流水', icon: 'Clock' },
+          { path: '/inventory/warning', title: '库存预警', icon: 'Warning' },
+          { path: '/inventory/stocktake', title: '库存盘点', icon: 'DocumentChecked' },
+          { path: '/inventory/adjust', title: '库存调整', icon: 'EditPen' }
+        ]},
+        { path: '/wms', title: 'WMS', icon: 'OfficeBuilding', children: [
+          { path: '/wms/warehouse', title: '仓库管理', icon: 'HomeFilled' },
+          { path: '/wms/area', title: '库区管理', icon: 'Grid' },
+          { path: '/wms/location', title: '库位管理', icon: 'MapLocation' },
+          { path: '/wms/transfer', title: '调拨管理', icon: 'Switch' },
+          { path: '/wms/batch', title: '批次管理', icon: 'CollectionTag' },
+          { path: '/wms/barcode', title: '条码管理', icon: 'Grid' }
+        ]},
+        { path: '/production', title: '生产管理', icon: 'Cpu', children: [
+          { path: '/production/bom', title: 'BOM管理', icon: 'Document' },
+          { path: '/production/process', title: '工艺路线', icon: 'Share' },
+          { path: '/production/capacity', title: '产能数据', icon: 'DataLine' },
+          { path: '/production/mps', title: '主生产计划', icon: 'Calendar' },
+          { path: '/production/mrp', title: '物料需求计划', icon: 'Tickets' },
+          { path: '/production/order', title: '生产订单', icon: 'List' },
+          { path: '/production/operation', title: '工序管理', icon: 'Operation' },
+          { path: '/production/workshop', title: '车间管理', icon: 'OfficeBuilding' },
+          { path: '/production/outsourcing', title: '委外加工', icon: 'Connection' },
+          { path: '/production/equipment', title: '设备管理', icon: 'Tools' }
+        ]},
+        { path: '/finance', title: '财务管理', icon: 'Money', children: [
+          { path: '/finance/subject', title: '会计科目', icon: 'Collection' },
+          { path: '/finance/voucher', title: '凭证管理', icon: 'Document' },
+          { path: '/finance/voucherTemplate', title: '凭证模板', icon: 'MagicStick' },
+          { path: '/finance/ledger', title: '总账查询', icon: 'Notebook' },
+          { path: '/finance/trialBalance', title: '试算平衡', icon: 'DataLine' },
+          { path: '/finance/report', title: '财务报表', icon: 'DataAnalysis' },
+          { path: '/finance/period', title: '期末结账', icon: 'Calendar' },
+          { path: '/finance/receivable', title: '应收管理', icon: 'ArrowDown' },
+          { path: '/finance/payable', title: '应付管理', icon: 'ArrowUp' },
+          { path: '/finance/receipt', title: '收款单', icon: 'CreditCard' },
+          { path: '/finance/payment', title: '付款单', icon: 'CreditCard' },
+          { path: '/finance/expense', title: '费用管理', icon: 'Wallet' },
+          { path: '/finance/invoice', title: '发票管理', icon: 'Ticket' },
+          { path: '/finance/businessIntegration', title: '业务-财务集成', icon: 'Connection' },
+          { path: '/finance/receivableAging', title: '应收账龄分析', icon: 'TrendCharts' },
+          { path: '/finance/payableAging', title: '应付账龄分析', icon: 'TrendCharts' },
+          { path: '/finance/bankAccount', title: '银行账户与资金', icon: 'CreditCard' },
+          { path: '/finance/bankReconcile', title: '银行对账', icon: 'Document' }
+        ]},
+        { path: '/bi', title: 'BI报表', icon: 'DataAnalysis', children: [
+          { path: '/bi/sales-analysis', title: '销售分析', icon: 'TrendCharts' },
+          { path: '/bi/purchase-analysis', title: '采购分析', icon: 'ShoppingCart' },
+          { path: '/bi/inventory-analysis', title: '库存分析', icon: 'Box' },
+          { path: '/bi/profit-analysis', title: '利润分析', icon: 'Money' }
+        ]},
+        { path: '/system', title: '系统管理', icon: 'Setting', children: [
+          { path: '/system/user', title: '用户管理', icon: 'UserFilled' },
+          { path: '/system/role', title: '角色管理', icon: 'User' },
+          { path: '/system/menu', title: '菜单管理', icon: 'Menu' },
+          { path: '/system/dept', title: '部门管理', icon: 'OfficeBuilding' },
+          { path: '/system/dict', title: '字典管理', icon: 'Document' },
+          { path: '/system/log', title: '操作日志', icon: 'Notebook' },
+          { path: '/system/config', title: '系统配置', icon: 'Tools' }
+        ]}
+      ]
+      return { code: 200, data: menuTree }
+    }
   }
 ]

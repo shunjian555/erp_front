@@ -35,11 +35,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Fold, Expand } from '@element-plus/icons-vue'
 import { useAppStore } from '@/stores/app'
-import menuData from '@/config/menus.json'
+import request from '@/utils/request'
 import SidebarItem from './SidebarItem.vue'
 
 const route = useRoute()
@@ -48,7 +48,23 @@ const appStore = useAppStore()
 
 const isCollapsed = computed(() => appStore.sidebarCollapsed)
 
-// 从 JSON 文件读取菜单数据，转换为路由格式（将 title/icon/affix 等包装到 meta 中）
+// 从后端接口加载菜单数据
+const menuList = ref([])
+
+async function loadMenus() {
+  try {
+    const res = await request({ url: '/api/system/menu/tree', method: 'get' })
+    menuList.value = res.data || []
+  } catch (e) {
+    menuList.value = []
+  }
+}
+
+onMounted(() => {
+  loadMenus()
+})
+
+// 将菜单数据转换为路由格式（将 title/icon/affix 等包装到 meta 中）
 const menuRoutes = computed(() => {
   function transform(item) {
     const result = { path: item.path }
@@ -62,7 +78,7 @@ const menuRoutes = computed(() => {
     }
     return result
   }
-  return menuData.map(transform)
+  return menuList.value.map(transform)
 })
 
 // 当前激活菜单

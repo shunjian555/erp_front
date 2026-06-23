@@ -9,9 +9,9 @@
       <el-table-column prop="code" label="编码" width="120" />
       <el-table-column prop="leader" label="负责人" width="110" />
       <el-table-column prop="phone" label="电话" width="130" />
-      <el-table-column prop="userCount" label: "人数" width="80" align="center" />
-      <el-table-column prop="sort" label: "排序" width="70" align="center" />
-      <el-table-column prop="status" label: "状态" width="80" align="center">
+      <el-table-column prop="userCount" label="人数" width="80" align="center" />
+      <el-table-column prop="sort" label="排序" width="70" align="center" />
+      <el-table-column prop="status" label="状态" width="80" align="center">
         <template #default="{ row }"><BaseStatusTag :type="row.status === 1 ? 'success' : 'danger'">{{ row.status === 1 ? '正常' : '停用' }}</BaseStatusTag></template>
       </el-table-column>
       <el-table-column label="操作" width="220" fixed="right">

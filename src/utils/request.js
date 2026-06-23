@@ -16,6 +16,7 @@ import biMockApis from '@/mock/modules/bi.js'
 import systemMockApis from '@/mock/modules/system.js'
 import wmsFinanceMockApis from '@/mock/modules/wms-finance.js'
 import userMockApis from '@/mock/user.js'
+import manufacturingMockApis from '@/mock/modules/manufacturing.js'
 
 // 收集所有 mock API：{ url -> { method, response } }
 const mockApis = new Map()
@@ -34,6 +35,7 @@ registerApis(biMockApis)
 registerApis(systemMockApis)
 registerApis(wmsFinanceMockApis)
 registerApis(userMockApis)
+registerApis(manufacturingMockApis)
 
 // 模拟网络延迟（毫秒）
 const MOCK_DELAY = 200
