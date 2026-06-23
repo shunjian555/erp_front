@@ -2,21 +2,45 @@
   <div class="page-container">
     <BaseSearch :search-items="searchItems" @search="handleSearch" @reset="handleReset" />
     <div class="table-toolbar">
-      <div class="toolbar-left"><el-button type="primary" :icon="Plus" @click="handleAdd">新增库位</el-button><el-button :icon="Download" plain>导出</el-button></div>
+      <div class="toolbar-left">
+        <el-button type="primary" :icon="Plus" @click="handleAdd">新增库位</el-button>
+        <el-button type="danger" :icon="Delete" plain :disabled="selectedRows.length === 0" @click="handleBatchDelete">批量删除</el-button>
+        <el-button :icon="Download" plain @click="handleExport">导出</el-button>
+      </div>
       <div class="toolbar-right"><el-button :icon="Refresh" circle @click="loadData" /></div>
     </div>
     <BaseTable :columns="columns" :table-data="tableData" :loading="loading" :total="total" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :show-selection="true" :show-index="true" @selection-change="handleSelectionChange" @current-change="handlePageChange" @size-change="handleSizeChange">
       <template #status="{ row }"><BaseStatusTag :type="row.status === 1 ? 'success' : 'info'">{{ row.status === 1 ? '可用' : '占用' }}</BaseStatusTag></template>
-      <template #operation="{ row }"><el-button type="primary" link size="small" @click="handleEdit(row)">编辑</el-button><el-button type="danger" link size="small" @click="handleDelete(row)">删除</el-button></template>
+      <template #operation="{ row }">
+        <el-button v-for="action in getActions(row).slice(0, 3)" :key="action.key" :type="action.type" link size="small" @click="action.handler(row)">{{ action.label }}</el-button>
+        <el-dropdown v-if="getActions(row).length > 3" trigger="click" @command="(cmd) => handleCommand(cmd, row)">
+          <el-button type="primary" link size="small">更多<el-icon class="el-icon--right"><ArrowDown /></el-icon></el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item v-for="action in getActions(row).slice(3)" :key="action.key" :command="action.key">{{ action.label }}</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </template>
     </BaseTable>
-    <BaseDialog v-model="dialogVisible" title="新增库位" width="550px" :confirm-loading="submitLoading" @confirm="handleSubmit" @cancel="cancelDialog"><BaseForm ref="formRef" v-model="formData" :form-items="formItems" :form-rules="formRules" :col-count="2" /></BaseDialog>
+    <BaseDialog v-model="dialogVisible" :title="dialogTitle" width="550px" :confirm-loading="submitLoading" @confirm="handleSubmit" @cancel="cancelDialog"><BaseForm ref="formRef" v-model="formData" :form-items="formItems" :form-rules="formRules" :col-count="2" /></BaseDialog>
+    <el-dialog v-model="viewVisible" title="库位详情" width="500px">
+      <el-descriptions v-if="viewRow" :column="2" border>
+        <el-descriptions-item label="编码">{{ viewRow.locationCode }}</el-descriptions-item>
+        <el-descriptions-item label="库区">{{ viewRow.areaName }}</el-descriptions-item>
+        <el-descriptions-item label="仓库">{{ viewRow.warehouseName }}</el-descriptions-item>
+        <el-descriptions-item label="行列">{{ viewRow.rowCol }}</el-descriptions-item>
+        <el-descriptions-item label="承重(kg)">{{ viewRow.maxWeight }}</el-descriptions-item>
+        <el-descriptions-item label="状态">{{ viewRow.status === 1 ? '可用' : '占用' }}</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Download, Refresh } from '@element-plus/icons-vue'
+import { Plus, Download, Delete, Refresh, ArrowDown } from '@element-plus/icons-vue'
 import BaseSearch from '@/components/BaseSearch.vue'
 import BaseTable from '@/components/BaseTable.vue'
 import BaseDialog from '@/components/BaseDialog.vue'
@@ -29,20 +53,58 @@ const formItems = [ { prop: 'locationCode', label: '编码', type: 'input', span
 const formRules = { locationCode: [{ required: true, message: '请输入编码', trigger: 'blur' }] }
 
 const loading = ref(false), tableData = ref([]), total = ref(0), selectedRows = ref([])
-const dialogVisible = ref(false), submitLoading = ref(false), formRef = ref(null)
+const dialogVisible = ref(false), dialogTitle = ref('新增库位'), submitLoading = ref(false), formRef = ref(null)
+const viewVisible = ref(false), viewRow = ref(null)
 const queryParams = reactive({ pageNum: 1, pageSize: 10, locationCode: '', areaName: '' })
 const formData = reactive({ id: undefined, locationCode: '', areaName: '', warehouseName: '', rowCol: '', maxWeight: undefined })
 
-async function loadData() { loading.value = true; try { const res = await (await import('@/utils/request')).default({ url: '/api/wms/location/list', method: 'get', params: queryParams }); tableData.value = res.data.list || []; total.value = res.data.total || 0 } finally { loading.value = false } }
+async function loadData() {
+  loading.value = true
+  try {
+    const areas = ['A区-常温区', 'B区-冷藏区', 'C区-危险品区', 'D区-暂存区']
+    const whs = ['主仓库', '分仓库A', '华南仓库']
+    const all = Array.from({ length: 30 }, (_, i) => ({
+      id: i + 1,
+      locationCode: `L${String(i + 1).padStart(4, '0')}`,
+      areaName: areas[i % areas.length],
+      warehouseName: whs[i % whs.length],
+      rowCol: `${Math.floor(i / 10) + 1}-${(i % 10) + 1}`,
+      maxWeight: 100 + (i % 5) * 200,
+      status: i % 7 === 6 ? 0 : 1
+    }))
+    const { locationCode = '', areaName = '', pageNum = 1, pageSize = 10 } = queryParams
+    let filtered = all
+    if (locationCode) filtered = filtered.filter(x => x.locationCode.includes(locationCode))
+    if (areaName) filtered = filtered.filter(x => x.areaName.includes(areaName))
+    const start = (Number(pageNum) - 1) * Number(pageSize)
+    tableData.value = filtered.slice(start, start + Number(pageSize))
+    total.value = filtered.length
+  } finally { loading.value = false }
+}
 function handleSearch(p) { Object.assign(queryParams, p, { pageNum: 1 }); loadData() }
 function handleReset() { Object.keys(queryParams).forEach(k => { if (k !== 'pageNum' && k !== 'pageSize') queryParams[k] = '' }); loadData() }
-function handlePageChange(p) { queryParams.pageNum = p; loadData() }; function handleSizeChange(s) { queryParams.pageSize = s; queryParams.pageNum = 1; loadData() }
+function handlePageChange(p) { queryParams.pageNum = p; loadData() }
+function handleSizeChange(s) { queryParams.pageSize = s; queryParams.pageNum = 1; loadData() }
 function handleSelectionChange(r) { selectedRows.value = r }
-function handleAdd() { Object.keys(formData).forEach(k => formData[k] = ''); formData.id = undefined; dialogVisible.value = true }
-function handleEdit(r) { Object.assign(formData, r); dialogVisible.value = true }
+function handleAdd() { dialogTitle.value = '新增库位'; Object.keys(formData).forEach(k => formData[k] = ''); formData.id = undefined; dialogVisible.value = true }
+function handleView(row) { viewRow.value = row; viewVisible.value = true }
+function handleEdit(r) { dialogTitle.value = '编辑库位'; Object.assign(formData, r); dialogVisible.value = true }
+function handleToggle(row) { row.status = row.status === 1 ? 0 : 1; ElMessage.success(`${row.status === 1 ? '释放' : '占用'}成功`) }
+function handleExport() { ElMessage.success('已导出当前库位数据') }
 function cancelDialog() { dialogVisible.value = false; formRef.value?.resetFields() }
 async function handleSubmit() { const valid = await formRef.value?.validate().catch(() => false); if (!valid) return; submitLoading.value = true; try { await new Promise(r => setTimeout(r, 500)); ElMessage.success('操作成功'); dialogVisible.value = false; loadData() } catch { ElMessage.error('操作失败') } finally { submitLoading.value = false } }
-async function handleDelete(row) { await ElMessageBox.confirm('确定删除?', '提示', { type: 'warning' }); ElMessage.success('删除成功'); loadData() }
+async function handleDelete(row) { await ElMessageBox.confirm(`确定删除「${row.locationCode}」?`, '提示', { type: 'warning' }); ElMessage.success('删除成功'); loadData() }
+async function handleBatchDelete() { await ElMessageBox.confirm(`确定批量删除 ${selectedRows.value.length} 项?`, '提示', { type: 'warning' }); ElMessage.success('批量删除成功'); selectedRows.value = []; loadData() }
+function getActions(row) {
+  const actions = [
+    { key: 'view', label: '查看', type: 'primary', handler: handleView },
+    { key: 'edit', label: '编辑', type: 'primary', handler: handleEdit }
+  ]
+  actions.push({ key: 'toggle', label: row.status === 1 ? '占用' : '释放', type: 'warning', handler: handleToggle })
+  actions.push({ key: 'delete', label: '删除', type: 'danger', handler: handleDelete })
+  return actions
+}
+function handleCommand(cmd, row) { getActions(row).find(a => a.key === cmd)?.handler(row) }
 onMounted(() => loadData())
 </script>
 

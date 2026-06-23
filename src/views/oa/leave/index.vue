@@ -13,6 +13,28 @@
     <BaseDialog v-model="dialogVisible" title="提交请假申请" width="550px" :confirm-loading="submitLoading" @confirm="handleSubmit" @cancel="cancelDialog">
       <BaseForm ref="formRef" v-model="formData" :form-items="formItems" :form-rules="formRules" :col-count="1" />
     </BaseDialog>
+    <BaseDialog v-model="viewDialogVisible" title="请假详情" width="620px" :show-footer="false" @cancel="viewDialogVisible = false">
+      <el-descriptions v-if="viewData.id" :column="2" border>
+        <el-descriptions-item label="标题">{{ viewData.title }}</el-descriptions-item>
+        <el-descriptions-item label="请假类型">
+          <el-tag size="small">{{ leaveTypeMap[viewData.leaveType] || viewData.leaveType }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="开始日期">{{ viewData.startDate }}</el-descriptions-item>
+        <el-descriptions-item label="结束日期">{{ viewData.endDate }}</el-descriptions-item>
+        <el-descriptions-item label="请假天数">{{ viewData.days }} 天</el-descriptions-item>
+        <el-descriptions-item label="审批状态">
+          <BaseStatusTag :type="viewData.status === 2 ? 'success' : viewData.status === 0 ? 'warning' : 'info'">{{ ['待审批','已拒绝','已通过'][viewData.status] || '未知' }}</BaseStatusTag>
+        </el-descriptions-item>
+        <el-descriptions-item label="申请人">{{ viewData.applicantName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="申请时间">{{ viewData.createTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="请假原因" :span="2">{{ viewData.reason || '-' }}</el-descriptions-item>
+        <template v-if="viewData.status !== 0">
+          <el-descriptions-item label="审批人">{{ viewData.approverName || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="审批时间">{{ viewData.approveTime || '-' }}</el-descriptions-item>
+          <el-descriptions-item v-if="viewData.status === 1" label="拒绝原因" :span="2">{{ viewData.approveRemark || '-' }}</el-descriptions-item>
+        </template>
+      </el-descriptions>
+    </BaseDialog>
   </div>
 </template>
 
@@ -34,6 +56,8 @@ const formRules = { title: [{ required: true, message: '请输入标题', trigge
 
 const loading = ref(false), tableData = ref([]), total = ref(0)
 const dialogVisible = ref(false), submitLoading = ref(false), formRef = ref(null)
+const viewDialogVisible = ref(false)
+const viewData = reactive({ id: undefined, title: '', leaveType: '', startDate: '', endDate: '', days: '', reason: '', status: 0, applicantName: '', createTime: '', approverName: '', approveTime: '', approveRemark: '' })
 const queryParams = reactive({ pageNum: 1, pageSize: 10, startDate: '', endDate: '' })
 const formData = reactive({ id: undefined, title: '', leaveType: '', startDate: '', endDate: '', reason: '' })
 
@@ -44,7 +68,7 @@ function handlePageChange(p) { queryParams.pageNum = p; loadData() }; function h
 function handleAdd() { Object.keys(formData).forEach(k => formData[k] = ''); formData.id = undefined; dialogVisible.value = true }
 function cancelDialog() { dialogVisible.value = false; formRef.value?.resetFields() }
 async function handleSubmit() { const valid = await formRef.value?.validate().catch(() => false); if (!valid) return; submitLoading.value = true; try { await new Promise(r => setTimeout(r, 500)); ElMessage.success('提交成功'); dialogVisible.value = false; loadData() } catch { ElMessage.error('提交失败') } finally { submitLoading.value = false } }
-function handleView(row) { ElMessage.info(`查看: ${row.title}`) }
+function handleView(row) { Object.assign(viewData, row); viewDialogVisible.value = true }
 async function handleCancel(row) { await ElMessageBox.confirm('确定撤销?', '提示', { type: 'warning' }); ElMessage.success('撤销成功'); loadData() }
 onMounted(() => loadData())
 </script>

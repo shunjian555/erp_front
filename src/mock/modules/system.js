@@ -185,13 +185,24 @@ export default [
           { path: '/finance/receivableAging', title: '应收账龄分析', icon: 'TrendCharts' },
           { path: '/finance/payableAging', title: '应付账龄分析', icon: 'TrendCharts' },
           { path: '/finance/bankAccount', title: '银行账户与资金', icon: 'CreditCard' },
-          { path: '/finance/bankReconcile', title: '银行对账', icon: 'Document' }
+          { path: '/finance/bankReconcile', title: '银行对账', icon: 'Document' },
+          { path: '/finance/cashier', title: '出纳管理', icon: 'Wallet' },
+          { path: '/finance/onlineBank', title: '网上银行', icon: 'CreditCard' },
+          { path: '/finance/tax', title: '税务管理', icon: 'Ticket' },
+          { path: '/finance/fundPlan', title: '资金计划', icon: 'Coin' },
+          { path: '/finance/cashFlow', title: '现金流预测', icon: 'DataLine' },
+          { path: '/finance/multiBook', title: '多账簿管理', icon: 'Notebook' }
         ]},
         { path: '/bi', title: 'BI报表', icon: 'DataAnalysis', children: [
           { path: '/bi/sales-analysis', title: '销售分析', icon: 'TrendCharts' },
           { path: '/bi/purchase-analysis', title: '采购分析', icon: 'ShoppingCart' },
           { path: '/bi/inventory-analysis', title: '库存分析', icon: 'Box' },
-          { path: '/bi/profit-analysis', title: '利润分析', icon: 'Money' }
+          { path: '/bi/profit-analysis', title: '利润分析', icon: 'Money' },
+          { path: '/bi/reportDesigner', title: '自定义报表设计器', icon: 'EditPen' },
+          { path: '/bi/dashboardCustom', title: '仪表盘自定义', icon: 'DataBoard' },
+          { path: '/bi/alertRule', title: '预警规则配置', icon: 'Warning' },
+          { path: '/bi/dataDrill', title: '数据钻取', icon: 'Share' },
+          { path: '/bi/comparisonAnalysis', title: '同比环比分析', icon: 'TrendCharts' }
         ]},
         { path: '/system', title: '系统管理', icon: 'Setting', children: [
           { path: '/system/user', title: '用户管理', icon: 'UserFilled' },
@@ -200,7 +211,15 @@ export default [
           { path: '/system/dept', title: '部门管理', icon: 'OfficeBuilding' },
           { path: '/system/dict', title: '字典管理', icon: 'Document' },
           { path: '/system/log', title: '操作日志', icon: 'Notebook' },
-          { path: '/system/config', title: '系统配置', icon: 'Tools' }
+          { path: '/system/config', title: '系统配置', icon: 'Tools' },
+          { path: '/system/orgSwitch', title: '多组织/多公司', icon: 'OfficeBuilding' },
+          { path: '/system/i18n', title: '多语言 (i18n)', icon: 'ChatLineRound' },
+          { path: '/system/docNumber', title: '单据编号规则', icon: 'CollectionTag' },
+          { path: '/system/printTemplate', title: '打印模板设计', icon: 'Printer' },
+          { path: '/system/workflowDesigner', title: '工作流设计器', icon: 'Share' },
+          { path: '/system/dataImport', title: '数据导入导出', icon: 'Upload' },
+          { path: '/system/apiGateway', title: 'API 网关', icon: 'Connection' },
+          { path: '/system/monitor', title: '系统监控', icon: 'Monitor' }
         ]}
       ]
       return { code: 200, data: menuTree }

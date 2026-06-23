@@ -578,6 +578,42 @@ export const asyncRoutes = [
         name: 'FinanceBankReconcile',
         component: () => import('@/views/finance/bankReconcile/index.vue'),
         meta: { title: '银行对账', icon: 'Document' }
+      },
+      {
+        path: 'cashier',
+        name: 'FinanceCashier',
+        component: () => import('@/views/finance/cashier/index.vue'),
+        meta: { title: '出纳管理', icon: 'Wallet' }
+      },
+      {
+        path: 'onlineBank',
+        name: 'FinanceOnlineBank',
+        component: () => import('@/views/finance/onlineBank/index.vue'),
+        meta: { title: '网上银行', icon: 'CreditCard' }
+      },
+      {
+        path: 'tax',
+        name: 'FinanceTax',
+        component: () => import('@/views/finance/tax/index.vue'),
+        meta: { title: '税务管理', icon: 'Ticket' }
+      },
+      {
+        path: 'fundPlan',
+        name: 'FinanceFundPlan',
+        component: () => import('@/views/finance/fundPlan/index.vue'),
+        meta: { title: '资金计划', icon: 'Coin' }
+      },
+      {
+        path: 'cashFlow',
+        name: 'FinanceCashFlow',
+        component: () => import('@/views/finance/cashFlow/index.vue'),
+        meta: { title: '现金流预测', icon: 'DataLine' }
+      },
+      {
+        path: 'multiBook',
+        name: 'FinanceMultiBook',
+        component: () => import('@/views/finance/multiBook/index.vue'),
+        meta: { title: '多账簿管理', icon: 'Notebook' }
       }
     ]
   },
@@ -612,6 +648,36 @@ export const asyncRoutes = [
         name: 'BiProfitAnalysis',
         component: () => import('@/views/bi/profitAnalysis/index.vue'),
         meta: { title: '利润分析', icon: 'Money' }
+      },
+      {
+        path: 'reportDesigner',
+        name: 'BiReportDesigner',
+        component: () => import('@/views/bi/reportDesigner/index.vue'),
+        meta: { title: '自定义报表设计器', icon: 'EditPen' }
+      },
+      {
+        path: 'dashboardCustom',
+        name: 'BiDashboardCustom',
+        component: () => import('@/views/bi/dashboardCustom/index.vue'),
+        meta: { title: '仪表盘自定义', icon: 'DataBoard' }
+      },
+      {
+        path: 'alertRule',
+        name: 'BiAlertRule',
+        component: () => import('@/views/bi/alertRule/index.vue'),
+        meta: { title: '预警规则配置', icon: 'Warning' }
+      },
+      {
+        path: 'dataDrill',
+        name: 'BiDataDrill',
+        component: () => import('@/views/bi/dataDrill/index.vue'),
+        meta: { title: '数据钻取', icon: 'Share' }
+      },
+      {
+        path: 'comparisonAnalysis',
+        name: 'BiComparisonAnalysis',
+        component: () => import('@/views/bi/comparisonAnalysis/index.vue'),
+        meta: { title: '同比环比分析', icon: 'TrendCharts' }
       }
     ]
   },
@@ -664,6 +730,54 @@ export const asyncRoutes = [
         name: 'SystemConfig',
         component: () => import('@/views/system/config/index.vue'),
         meta: { title: '系统配置', icon: 'Tools' }
+      },
+      {
+        path: 'orgSwitch',
+        name: 'SystemOrgSwitch',
+        component: () => import('@/views/system/orgSwitch/index.vue'),
+        meta: { title: '多组织/多公司', icon: 'OfficeBuilding' }
+      },
+      {
+        path: 'i18n',
+        name: 'SystemI18n',
+        component: () => import('@/views/system/i18n/index.vue'),
+        meta: { title: '多语言 (i18n)', icon: 'ChatLineRound' }
+      },
+      {
+        path: 'docNumber',
+        name: 'SystemDocNumber',
+        component: () => import('@/views/system/docNumber/index.vue'),
+        meta: { title: '单据编号规则', icon: 'CollectionTag' }
+      },
+      {
+        path: 'printTemplate',
+        name: 'SystemPrintTemplate',
+        component: () => import('@/views/system/printTemplate/index.vue'),
+        meta: { title: '打印模板设计', icon: 'Printer' }
+      },
+      {
+        path: 'workflowDesigner',
+        name: 'SystemWorkflowDesigner',
+        component: () => import('@/views/system/workflowDesigner/index.vue'),
+        meta: { title: '工作流设计器', icon: 'Share' }
+      },
+      {
+        path: 'dataImport',
+        name: 'SystemDataImport',
+        component: () => import('@/views/system/dataImport/index.vue'),
+        meta: { title: '数据导入导出', icon: 'Upload' }
+      },
+      {
+        path: 'apiGateway',
+        name: 'SystemApiGateway',
+        component: () => import('@/views/system/apiGateway/index.vue'),
+        meta: { title: 'API 网关', icon: 'Connection' }
+      },
+      {
+        path: 'monitor',
+        name: 'SystemMonitor',
+        component: () => import('@/views/system/monitor/index.vue'),
+        meta: { title: '系统监控', icon: 'Monitor' }
       }
     ]
   }

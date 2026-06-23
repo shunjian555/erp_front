@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, nextTick } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTagsViewStore } from '@/stores/tagsView'
 
@@ -43,7 +43,7 @@ const route = useRoute()
 const router = useRouter()
 const tagsViewStore = useTagsViewStore()
 
-const visitedViews = ref(tagsViewStore.visitedViews)
+const visitedViews = computed(() => tagsViewStore.visitedViews)
 const selectedTag = ref(null)
 
 // 右键菜单状态

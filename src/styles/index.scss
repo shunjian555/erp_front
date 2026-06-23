@@ -114,3 +114,13 @@ a {
   opacity: 0;
   transform: translateX(30px);
 }
+
+// ==================== ´òÓ¡ÑùÊ½ ====================
+@media print {
+  body { background: #fff !important; color: #000 !important; }
+  .no-print, .el-header, .el-aside, .table-toolbar, .el-pagination, .el-dialog__wrapper { display: none !important; }
+  .el-main, .app-container, .page-container { padding: 0 !important; margin: 0 !important; }
+  .el-card, .el-table, .el-tabs__content { box-shadow: none !important; border: 1px solid #ddd !important; }
+  .el-table th { background: #f5f5f5 !important; }
+  @page { size: A4; margin: 12mm; }
+}
