@@ -210,17 +210,23 @@ function bucketSummary({ columns, data }) {
   const totalCount = data.reduce((s, r) => s + (Number(r.count) || 0), 0)
   const totalAmount = data.reduce((s, r) => s + (Number(r.totalAmount) || 0), 0)
   const totalRemain = data.reduce((s, r) => s + (Number(r.totalRemain) || 0), 0)
-  return [
-    { bucket: '合计', count: totalCount, totalAmount: formatMoney(totalAmount), totalRemain: formatMoney(totalRemain), ratio: '100%' }
-  ]
+  const map = { count: totalCount, totalAmount: formatMoney(totalAmount), totalRemain: formatMoney(totalRemain), ratio: '100%' }
+  return columns.map((col, i) => {
+    if (i === 0) return '合计'
+    if (col.property && map[col.property] !== undefined) return map[col.property]
+    return ''
+  })
 }
 function supplierSummary({ columns, data }) {
   const totalCount = data.reduce((s, r) => s + (Number(r.count) || 0), 0)
   const totalAmount = data.reduce((s, r) => s + (Number(r.totalAmount) || 0), 0)
   const totalRemain = data.reduce((s, r) => s + (Number(r.totalRemain) || 0), 0)
-  return [
-    { supplierName: '合计', count: totalCount, totalAmount: formatMoney(totalAmount), totalRemain: formatMoney(totalRemain), ratio: '100%' }
-  ]
+  const map = { count: totalCount, totalAmount: formatMoney(totalAmount), totalRemain: formatMoney(totalRemain), ratio: '100%' }
+  return columns.map((col, i) => {
+    if (i === 0) return '合计'
+    if (col.property && map[col.property] !== undefined) return map[col.property]
+    return ''
+  })
 }
 function formatMoney(v) {
   if (v === null || v === undefined || v === '') return '0.00'

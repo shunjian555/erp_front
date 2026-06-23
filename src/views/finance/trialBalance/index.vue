@@ -123,21 +123,20 @@ async function loadData() {
   }
 }
 
-function summaryMethod({ columns, data }) {
-  // 用列索引在 columns 数组中安全查找 prop 名为科目列的索引
-  const findCol = (prop) => columns.findIndex(c => c && c.prop === prop)
-  const rows = [
-    {
-      subjectCode: '合计',
-      openingDebit: formatMoney(totalOpeningDebit.value),
-      openingCredit: formatMoney(totalOpeningCredit.value),
-      periodDebit: formatMoney(totalPeriodDebit.value),
-      periodCredit: formatMoney(totalPeriodCredit.value),
-      endingDebit: formatMoney(totalOpeningDebit.value + totalPeriodDebit.value),
-      endingCredit: formatMoney(totalOpeningCredit.value + totalPeriodCredit.value)
-    }
-  ]
-  return rows
+function summaryMethod({ columns }) {
+  const map = {
+    openingDebit: formatMoney(totalOpeningDebit.value),
+    openingCredit: formatMoney(totalOpeningCredit.value),
+    periodDebit: formatMoney(totalPeriodDebit.value),
+    periodCredit: formatMoney(totalPeriodCredit.value),
+    endingDebit: formatMoney(totalOpeningDebit.value + totalPeriodDebit.value),
+    endingCredit: formatMoney(totalOpeningCredit.value + totalPeriodCredit.value)
+  }
+  return columns.map((col, i) => {
+    if (i === 0) return '合计'
+    if (col.property && map[col.property]) return map[col.property]
+    return ''
+  })
 }
 
 function formatMoney(v) {

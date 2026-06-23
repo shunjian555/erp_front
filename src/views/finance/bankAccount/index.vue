@@ -204,9 +204,12 @@ function maskAccount(no) {
 function accountSummary({ columns, data }) {
   const opSum = data.reduce((s, r) => s + (Number(r.openingBalance) || 0), 0)
   const curSum = data.reduce((s, r) => s + (Number(r.currentBalance) || 0), 0)
-  return [
-    { accountName: '合计', openingBalance: formatMoney(opSum), currentBalance: formatMoney(curSum) }
-  ]
+  const map = { openingBalance: formatMoney(opSum), currentBalance: formatMoney(curSum) }
+  return columns.map((col, i) => {
+    if (i === 0) return '合计'
+    if (col.property && map[col.property] !== undefined) return map[col.property]
+    return ''
+  })
 }
 function formatMoney(v) {
   if (v === null || v === undefined || v === '') return '0.00'

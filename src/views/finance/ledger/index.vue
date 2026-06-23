@@ -6,8 +6,8 @@
         <BaseSearch :search-items="detailSearchItems" @search="handleDetailSearch" @reset="handleDetailReset" />
         <div class="table-toolbar">
           <div class="toolbar-left">
-            <el-button type="primary" :icon="Download" plain>导出</el-button>
-            <el-button :icon="Printer" plain>打印</el-button>
+            <el-button type="primary" :icon="Download" plain @click="handleExportClick">导出</el-button>
+            <el-button :icon="Printer" plain @click="handlePrintClick">打印</el-button>
           </div>
           <div class="toolbar-right">
             <el-tag>期间：{{ queryDetail.period }}</el-tag>
@@ -48,8 +48,8 @@
         <BaseSearch :search-items="balanceSearchItems" @search="handleBalanceSearch" @reset="handleBalanceReset" />
         <div class="table-toolbar">
           <div class="toolbar-left">
-            <el-button type="primary" :icon="Download" plain>导出</el-button>
-            <el-button :icon="Printer" plain>打印</el-button>
+            <el-button type="primary" :icon="Download" plain @click="handleExportClick">导出</el-button>
+            <el-button :icon="Printer" plain @click="handlePrintClick">打印</el-button>
           </div>
         </div>
         <BaseTable
@@ -75,7 +75,7 @@
         <BaseSearch :search-items="generalSearchItems" @search="handleGeneralSearch" @reset="handleGeneralReset" />
         <div class="table-toolbar">
           <div class="toolbar-left">
-            <el-button type="primary" :icon="Download" plain>导出</el-button>
+            <el-button type="primary" :icon="Download" plain @click="handleGeneralExport">导出</el-button>
           </div>
         </div>
         <BaseTable
@@ -89,6 +89,8 @@
           <template #openingCredit="{ row }">{{ formatMoney(row.openingCredit) }}</template>
           <template #periodDebit="{ row }">{{ formatMoney(row.periodDebit) }}</template>
           <template #periodCredit="{ row }">{{ formatMoney(row.periodCredit) }}</template>
+          <template #endingDebit="{ row }">{{ formatMoney(row.endingDebit) }}</template>
+          <template #endingCredit="{ row }">{{ formatMoney(row.endingCredit) }}</template>
         </BaseTable>
       </el-tab-pane>
     </el-tabs>
@@ -147,9 +149,12 @@ async function loadDetail() {
 function detailSummary({ columns, data }) {
   const sumDebit = data.reduce((s, r) => s + (Number(r.debitAmount) || 0), 0)
   const sumCredit = data.reduce((s, r) => s + (Number(r.creditAmount) || 0), 0)
-  return [
-    { voucherDate: '合计', debitAmount: formatMoney(sumDebit), creditAmount: formatMoney(sumCredit) }
-  ]
+  return columns.map((col, i) => {
+    if (i === 0) return '合计'
+    if (col.property === 'debitAmount') return formatMoney(sumDebit)
+    if (col.property === 'creditAmount') return formatMoney(sumCredit)
+    return ''
+  })
 }
 
 // ========== Tab 2 科目余额表 ==========
@@ -197,14 +202,18 @@ async function loadBalance() {
 }
 
 function balanceSummary({ columns, data }) {
-  const sum = (i) => data.reduce((s, r) => s + (Number(r[Object.keys(r)[i]]) || 0), 0)
   const opD = data.reduce((s, r) => s + (Number(r.openingDebit) || 0), 0)
   const opC = data.reduce((s, r) => s + (Number(r.openingCredit) || 0), 0)
   const pd = data.reduce((s, r) => s + (Number(r.periodDebit) || 0), 0)
   const pc = data.reduce((s, r) => s + (Number(r.periodCredit) || 0), 0)
-  return [
-    { subjectCode: '合计', openingDebit: formatMoney(opD), openingCredit: formatMoney(opC), periodDebit: formatMoney(pd), periodCredit: formatMoney(pc) }
-  ]
+  const ed = data.reduce((s, r) => s + (Number(r.endingDebit) || 0), 0)
+  const ec = data.reduce((s, r) => s + (Number(r.endingCredit) || 0), 0)
+  const map = { openingDebit: opD, openingCredit: opC, periodDebit: pd, periodCredit: pc, endingDebit: ed, endingCredit: ec }
+  return columns.map((col, i) => {
+    if (i === 0) return '合计'
+    if (col.property && map[col.property] !== undefined) return formatMoney(map[col.property])
+    return ''
+  })
 }
 
 // ========== Tab 3 总账 ==========
@@ -223,8 +232,8 @@ const generalColumns = [
   { prop: 'openingCredit', label: '期初贷方', width: 130, slot: 'openingCredit', align: 'right' },
   { prop: 'periodDebit', label: '本期借方', width: 130, slot: 'periodDebit', align: 'right' },
   { prop: 'periodCredit', label: '本期贷方', width: 130, slot: 'periodCredit', align: 'right' },
-  { prop: 'endingDebit', label: '期末借方', width: 130, align: 'right' },
-  { prop: 'endingCredit', label: '期末贷方', width: 130, align: 'right' }
+  { prop: 'endingDebit', label: '期末借方', width: 130, slot: 'endingDebit', align: 'right' },
+  { prop: 'endingCredit', label: '期末贷方', width: 130, slot: 'endingCredit', align: 'right' }
 ]
 const generalData = ref([])
 const generalLoading = ref(false)
@@ -244,14 +253,101 @@ function generalSummary({ columns, data }) {
   const opC = data.reduce((s, r) => s + (Number(r.openingCredit) || 0), 0)
   const pd = data.reduce((s, r) => s + (Number(r.periodDebit) || 0), 0)
   const pc = data.reduce((s, r) => s + (Number(r.periodCredit) || 0), 0)
-  return [
-    { subjectCode: '合计', openingDebit: formatMoney(opD), openingCredit: formatMoney(opC), periodDebit: formatMoney(pd), periodCredit: formatMoney(pc), endingDebit: formatMoney(opD + pd), endingCredit: formatMoney(opC + pc) }
-  ]
+  const map = {
+    openingDebit: opD, openingCredit: opC,
+    periodDebit: pd, periodCredit: pc,
+    endingDebit: opD + pd, endingCredit: opC + pc
+  }
+  return columns.map((col, i) => {
+    if (i === 0) return '合计'
+    if (col.property && map[col.property] !== undefined) return formatMoney(map[col.property])
+    return ''
+  })
 }
 
 function formatMoney(v) {
   if (v === null || v === undefined || v === '') return '0.00'
   return Number(v).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+const MONEY_FIELDS = ['debitAmount', 'creditAmount', 'openingDebit', 'openingCredit', 'periodDebit', 'periodCredit', 'endingDebit', 'endingCredit']
+
+function rowToCell(col, row) {
+  const v = row[col.prop]
+  if (MONEY_FIELDS.includes(col.prop)) return formatMoney(v)
+  return v ?? ''
+}
+
+function exportExcel(columns, data, filename, title) {
+  const headers = columns.map(c => c.label)
+  const rows = data.map(row => columns.map(c => rowToCell(c, row)))
+  const thead = '<tr>' + headers.map(h => `<th style="background:#f0f0f0">${h}</th>`).join('') + '</tr>'
+  const tbody = rows.map(r => '<tr>' + r.map(c => `<td>${c}</td>`).join('') + '</tr>').join('')
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"></head><body>
+${title ? `<h2 style="text-align:center;font-family:SimSun">${title}</h2>` : ''}
+<table border="1" style="border-collapse:collapse;font-family:SimSun">${thead}${tbody}</table>
+</body></html>`
+  const blob = new Blob(['\uFEFF' + html], { type: 'application/vnd.ms-excel;charset=utf-8' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = `${filename}.xls`
+  a.click()
+  URL.revokeObjectURL(a.href)
+  ElMessage.success('导出成功')
+}
+
+function handleExportClick() {
+  if (activeTab.value === 'detail') {
+    exportExcel(detailColumns, detailData.value, '明细账-' + queryDetail.period, `明细账 - 期间 ${queryDetail.period}`)
+  } else if (activeTab.value === 'balance') {
+    exportExcel(balanceColumns, balanceData.value, '科目余额表-' + queryBalance.period, `科目余额表 - 期间 ${queryBalance.period}`)
+  } else if (activeTab.value === 'general') {
+    exportExcel(generalColumns, generalData.value, '总账-' + queryGeneral.period, `总账 - 期间 ${queryGeneral.period}`)
+  }
+}
+
+function handlePrintClick() {
+  if (activeTab.value === 'detail') {
+    printTable(detailColumns, detailData.value, `明细账 - 期间 ${queryDetail.period}`)
+  } else if (activeTab.value === 'balance') {
+    printTable(balanceColumns, balanceData.value, `科目余额表 - 期间 ${queryBalance.period}`)
+  }
+}
+
+function printTable(columns, data, title) {
+  const headers = columns.map(c => c.label)
+  const rows = data.map(row => columns.map(c => rowToCell(c, row)))
+  const style = `
+    @page { size: A4 landscape; margin: 12mm; }
+    body { font-family: SimSun, "宋体", serif; margin: 0; padding: 16px; color: #000; }
+    h2 { text-align: center; margin: 0 0 16px; font-size: 18px; }
+    table { border-collapse: collapse; width: 100%; font-size: 12px; }
+    th, td { border: 1px solid #333; padding: 6px 8px; text-align: left; }
+    th { background: #f0f0f0; font-weight: bold; }
+  `
+  const thead = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>'
+  const tbody = rows.map(r => '<tr>' + r.map(c => `<td>${c}</td>`).join('') + '</tr>').join('')
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>${style}</style></head><body>
+    <h2>${title}</h2>
+    <table><thead>${thead}</thead><tbody>${tbody}</tbody></table>
+  </body></html>`
+
+  const iframe = document.createElement('iframe')
+  iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;'
+  document.body.appendChild(iframe)
+  const win = iframe.contentWindow
+  const doc = win.document
+  doc.open()
+  doc.write(html)
+  doc.close()
+
+  const trigger = () => {
+    try { win.focus(); win.print() } catch (e) { ElMessage.error('打印失败') }
+    setTimeout(() => { if (iframe.parentNode) iframe.parentNode.removeChild(iframe) }, 1000)
+  }
+  if (doc.readyState === 'complete') trigger()
+  else iframe.onload = trigger
 }
 
 // Tab 切换 + 搜索
