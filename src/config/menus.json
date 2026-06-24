@@ -184,5 +184,29 @@
       { "path": "/system/apiGateway", "title": "API 网关", "icon": "Connection" },
       { "path": "/system/monitor", "title": "系统监控", "icon": "Monitor" }
     ]
+  },
+  {
+    "path": "/hr",
+    "title": "人力资源",
+    "icon": "Avatar",
+    "children": [
+      { "path": "/hr/employee", "title": "员工档案", "icon": "UserFilled" },
+      { "path": "/hr/organization", "title": "组织架构", "icon": "OfficeBuilding" },
+      { "path": "/hr/recruit/position", "title": "招聘职位", "icon": "Position" },
+      { "path": "/hr/recruit/resume", "title": "简历管理", "icon": "Document" },
+      { "path": "/hr/recruit/interview", "title": "面试管理", "icon": "ChatDotRound" },
+      { "path": "/hr/training/course", "title": "培训课程", "icon": "Reading" },
+      { "path": "/hr/training/plan", "title": "培训计划", "icon": "Calendar" },
+      { "path": "/hr/training/record", "title": "培训记录", "icon": "Notebook" },
+      { "path": "/hr/attendance/clock", "title": "打卡记录", "icon": "AlarmClock" },
+      { "path": "/hr/attendance/schedule", "title": "排班管理", "icon": "Timer" },
+      { "path": "/hr/attendance/statistics", "title": "考勤统计", "icon": "DataAnalysis" },
+      { "path": "/hr/performance/kpi", "title": "KPI设置", "icon": "Aim" },
+      { "path": "/hr/performance/assessment", "title": "绩效考核", "icon": "TrendCharts" },
+      { "path": "/hr/performance/score", "title": "评分管理", "icon": "Star" },
+      { "path": "/hr/salary/calculation", "title": "工资计算", "icon": "Money" },
+      { "path": "/hr/salary/tax", "title": "个税管理", "icon": "Ticket" },
+      { "path": "/hr/insurance", "title": "社保公积金", "icon": "Shield" }
+    ]
   }
 ]

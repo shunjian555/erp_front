@@ -168,6 +168,25 @@ export default [
           { path: '/production/outsourcing', title: '委外加工', titleKey: 'menu.productionOutsourcing', icon: 'Connection' },
           { path: '/production/equipment', title: '设备管理', titleKey: 'menu.productionEquipment', icon: 'Tools' }
         ]},
+        { path: '/hr', title: '人力资源', icon: 'Avatar', children: [
+          { path: '/hr/employee', title: '员工档案', icon: 'UserFilled' },
+          { path: '/hr/organization', title: '组织架构', icon: 'OfficeBuilding' },
+          { path: '/hr/recruit/position', title: '招聘职位', icon: 'Postcard' },
+          { path: '/hr/recruit/resume', title: '简历管理', icon: 'Document' },
+          { path: '/hr/recruit/interview', title: '面试管理', icon: 'ChatLineRound' },
+          { path: '/hr/training/course', title: '培训课程', icon: 'Reading' },
+          { path: '/hr/training/plan', title: '培训计划', icon: 'Calendar' },
+          { path: '/hr/training/record', title: '培训记录', icon: 'Notebook' },
+          { path: '/hr/attendance/clock', title: '打卡记录', icon: 'AlarmClock' },
+          { path: '/hr/attendance/schedule', title: '排班管理', icon: 'Clock' },
+          { path: '/hr/attendance/statistics', title: '考勤统计', icon: 'DataAnalysis' },
+          { path: '/hr/performance/kpi', title: 'KPI设置', icon: 'Aim' },
+          { path: '/hr/performance/assessment', title: '绩效考核', icon: 'Trophy' },
+          { path: '/hr/performance/score', title: '评分管理', icon: 'Star' },
+          { path: '/hr/salary/calculation', title: '工资计算', icon: 'Money' },
+          { path: '/hr/salary/tax', title: '个税管理', icon: 'Ticket' },
+          { path: '/hr/insurance', title: '社保公积金', icon: 'Shield' }
+        ]},
         { path: '/finance', title: '财务管理', titleKey: 'menu.finance', icon: 'Money', children: [
           { path: '/finance/subject', title: '会计科目', titleKey: 'menu.financeSubject', icon: 'Collection' },
           { path: '/finance/voucher', title: '凭证管理', titleKey: 'menu.financeVoucher', icon: 'Document' },

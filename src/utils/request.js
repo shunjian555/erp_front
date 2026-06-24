@@ -17,12 +17,20 @@ import systemMockApis from '@/mock/modules/system.js'
 import wmsFinanceMockApis from '@/mock/modules/wms-finance.js'
 import userMockApis from '@/mock/user.js'
 import manufacturingMockApis from '@/mock/modules/manufacturing.js'
+import hrMockApis from '@/mock/modules/hr.js'
 
-// 收集所有 mock API：{ url -> { method, response } }
-const mockApis = new Map()
+// 收集所有 mock API：按 method 分类的 api 列表
+const mockApis = {
+  GET: [],
+  POST: [],
+  PUT: [],
+  DELETE: []
+}
 function registerApis(list) {
   for (const api of list || []) {
-    mockApis.set(`${api.method.toUpperCase()} ${api.url}`, api)
+    const m = (api.method || 'get').toUpperCase()
+    if (!mockApis[m]) mockApis[m] = []
+    mockApis[m].push(api)
   }
 }
 registerApis(financeMockApis)
@@ -36,12 +44,28 @@ registerApis(systemMockApis)
 registerApis(wmsFinanceMockApis)
 registerApis(userMockApis)
 registerApis(manufacturingMockApis)
+registerApis(hrMockApis)
 
 // 模拟网络延迟（毫秒）
 const MOCK_DELAY = 200
 
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+/**
+ * 匹配单个 API 是否匹配请求 url
+ * - 字符串：完全相等
+ * - 正则：调用 .test()
+ */
+function matchUrl(apiUrl, reqUrl) {
+  if (typeof apiUrl === 'string') {
+    return apiUrl === reqUrl
+  }
+  if (apiUrl instanceof RegExp) {
+    return apiUrl.test(reqUrl)
+  }
+  return false
 }
 
 /**
@@ -53,23 +77,22 @@ async function request(config) {
   NProgress.start()
   const { url = '', method = 'get', params = {}, data = null } = config
   const upperMethod = method.toUpperCase()
-  const key = `${upperMethod} ${url}`
+  const candidates = mockApis[upperMethod] || []
 
   try {
-    // 优先精确匹配
-    let api = mockApis.get(key)
+    // 优先精确匹配（字符串）
+    let api = candidates.find(a => typeof a.url === 'string' && a.url === url)
 
-    // 兼容：params 在 url 上
-    if (!api && params && Object.keys(params).length) {
-      const qs = new URLSearchParams(params).toString()
-      api = mockApis.get(`${upperMethod} ${url}?${qs}`)
+    // 其次正则匹配
+    if (!api) {
+      api = candidates.find(a => a.url instanceof RegExp && a.url.test(url))
     }
 
     await delay(MOCK_DELAY)
     NProgress.done()
 
     if (!api) {
-      console.warn(`[Mock] 未注册接口: ${key}`)
+      console.warn(`[Mock] 未注册接口: ${upperMethod} ${url}`)
       // 兜底：返回空数据，避免页面崩溃
       return { code: 200, data: { list: [], total: 0 } }
     }

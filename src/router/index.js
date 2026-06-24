@@ -780,6 +780,118 @@ export const asyncRoutes = [
         meta: { title: '系统监控', icon: 'Monitor' }
       }
     ]
+  },
+
+  // ==================== 人力资源（HR） ====================
+  {
+    path: '/hr',
+    component: Layout,
+    redirect: '/hr/employee',
+    meta: { title: '人力资源', icon: 'Avatar' },
+    children: [
+      {
+        path: 'employee',
+        name: 'HrEmployee',
+        component: () => import('@/views/hr/employee/index.vue'),
+        meta: { title: '员工档案', icon: 'UserFilled' }
+      },
+      {
+        path: 'organization',
+        name: 'HrOrganization',
+        component: () => import('@/views/hr/organization/index.vue'),
+        meta: { title: '组织架构', icon: 'OfficeBuilding' }
+      },
+      {
+        path: 'recruit/position',
+        name: 'HrRecruitPosition',
+        component: () => import('@/views/hr/recruit/position/index.vue'),
+        meta: { title: '招聘职位', icon: 'TrophyBase' }
+      },
+      {
+        path: 'recruit/resume',
+        name: 'HrRecruitResume',
+        component: () => import('@/views/hr/recruit/resume/index.vue'),
+        meta: { title: '简历管理', icon: 'Document' }
+      },
+      {
+        path: 'recruit/interview',
+        name: 'HrRecruitInterview',
+        component: () => import('@/views/hr/recruit/interview/index.vue'),
+        meta: { title: '面试管理', icon: 'ChatDotRound' }
+      },
+      {
+        path: 'training/course',
+        name: 'HrTrainingCourse',
+        component: () => import('@/views/hr/training/course/index.vue'),
+        meta: { title: '培训课程', icon: 'Reading' }
+      },
+      {
+        path: 'training/plan',
+        name: 'HrTrainingPlan',
+        component: () => import('@/views/hr/training/plan/index.vue'),
+        meta: { title: '培训计划', icon: 'Calendar' }
+      },
+      {
+        path: 'training/record',
+        name: 'HrTrainingRecord',
+        component: () => import('@/views/hr/training/record/index.vue'),
+        meta: { title: '培训记录', icon: 'List' }
+      },
+      {
+        path: 'attendance/clock',
+        name: 'HrAttendanceClock',
+        component: () => import('@/views/hr/attendance/clock/index.vue'),
+        meta: { title: '打卡记录', icon: 'AlarmClock' }
+      },
+      {
+        path: 'attendance/schedule',
+        name: 'HrAttendanceSchedule',
+        component: () => import('@/views/hr/attendance/schedule/index.vue'),
+        meta: { title: '排班管理', icon: 'Timer' }
+      },
+      {
+        path: 'attendance/statistics',
+        name: 'HrAttendanceStatistics',
+        component: () => import('@/views/hr/attendance/statistics/index.vue'),
+        meta: { title: '考勤统计', icon: 'DataAnalysis' }
+      },
+      {
+        path: 'performance/kpi',
+        name: 'HrPerformanceKpi',
+        component: () => import('@/views/hr/performance/kpi/index.vue'),
+        meta: { title: 'KPI设置', icon: 'Aim' }
+      },
+      {
+        path: 'performance/assessment',
+        name: 'HrPerformanceAssessment',
+        component: () => import('@/views/hr/performance/assessment/index.vue'),
+        meta: { title: '绩效考核', icon: 'TrendCharts' }
+      },
+      {
+        path: 'performance/score',
+        name: 'HrPerformanceScore',
+        component: () => import('@/views/hr/performance/score/index.vue'),
+        meta: { title: '评分管理', icon: 'Star' }
+      },
+      {
+        path: 'salary/calculation',
+        name: 'HrSalaryCalculation',
+        component: () => import('@/views/hr/salary/calculation/index.vue'),
+        meta: { title: '工资计算', icon: 'Money' }
+      },
+      {
+        path: 'salary/tax',
+        name: 'HrSalaryTax',
+        component: () => import('@/views/hr/salary/tax/index.vue'),
+        meta: { title: '个税管理', icon: 'Ticket' }
+      },
+      {
+        path: 'insurance',
+        name: 'HrInsurance',
+        component: () => import('@/views/hr/insurance/index.vue'),
+        meta: { title: '社保公积金', icon: 'Shield' }
+      }
+    ]
   }
 ]
 
