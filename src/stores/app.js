@@ -8,6 +8,8 @@ export const useAppStore = defineStore('app', () => {
   const device = ref('desktop')
   // 主题模式
   const theme = ref(localStorage.getItem('erp_theme') || 'light')
+  // 语言
+  const language = ref(localStorage.getItem('erp_language') || 'zh-CN')
 
   // 切换侧边栏折叠状态
   function toggleSidebar() {
@@ -36,14 +38,22 @@ export const useAppStore = defineStore('app', () => {
     document.documentElement.classList.toggle('dark', theme.value === 'dark')
   }
 
+  // 切换语言
+  function setLanguage(lang) {
+    language.value = lang
+    localStorage.setItem('erp_language', lang)
+  }
+
   return {
     sidebarCollapsed,
     device,
     theme,
+    language,
     toggleSidebar,
     closeSidebar,
     openSidebar,
     setDevice,
-    toggleTheme
+    toggleTheme,
+    setLanguage
   }
 })

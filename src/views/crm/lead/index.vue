@@ -3,14 +3,14 @@
     <BaseSearch :search-items="searchItems" @search="handleSearch" @reset="handleReset" />
     <div class="table-toolbar">
       <div class="toolbar-left">
-        <el-button type="primary" :icon="Plus" @click="handleAdd">新增线索</el-button>
-        <el-button :icon="Delete" plain @click="handleBatchDelete">批量删除</el-button>
+        <el-button type="primary" :icon="Plus" @click="handleAdd">{{ t('crm.addLead') }}</el-button>
+        <el-button :icon="Delete" plain @click="handleBatchDelete">{{ t('crm.batchDelete') }}</el-button>
       </div>
       <div class="toolbar-right"><el-button :icon="Refresh" circle @click="loadData" /></div>
     </div>
     <BaseTable :columns="columns" :table-data="tableData" :loading="loading" :total="total" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :show-selection="true" :show-index="true" @selection-change="handleSelectionChange" @current-change="handlePageChange" @size-change="handleSizeChange">
-      <template #status="{ row }"><BaseStatusTag :type="row.status === 1 ? 'success' : 'warning'">{{ row.status === 1 ? '已转化' : '跟进中' }}</BaseStatusTag></template>
-      <template #operation="{ row }"><el-button type="primary" link size="small" @click="handleEdit(row)">编辑</el-button><el-button type="danger" link size="small" @click="handleDelete(row)">删除</el-button></template>
+      <template #status="{ row }"><BaseStatusTag :type="row.status === 1 ? 'success' : 'warning'">{{ row.status === 1 ? t('crm.converted') : t('crm.following') }}</BaseStatusTag></template>
+      <template #operation="{ row }"><el-button type="primary" link size="small" @click="handleEdit(row)">{{ t('common.edit') }}</el-button><el-button type="danger" link size="small" @click="handleDelete(row)">{{ t('common.delete') }}</el-button></template>
     </BaseTable>
     <BaseDialog v-model="dialogVisible" :title="dialogTitle" width="600px" :confirm-loading="submitLoading" @confirm="handleSubmit" @cancel="cancelDialog"><BaseForm ref="formRef" v-model="formData" :form-items="formItems" :form-rules="formRules" :col-count="2" /></BaseDialog>
   </div>
@@ -20,33 +20,36 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Delete, Refresh } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
 import BaseSearch from '@/components/BaseSearch.vue'
 import BaseTable from '@/components/BaseTable.vue'
 import BaseDialog from '@/components/BaseDialog.vue'
 import BaseForm from '@/components/BaseForm.vue'
 import BaseStatusTag from '@/components/BaseStatusTag.vue'
 
+const { t } = useI18n()
+
 const searchItems = [
-  { prop: 'companyName', label: '公司名称', type: 'input' },
-  { prop: 'contactName', label: '联系人', type: 'input' },
-  { prop: 'phone', label: '电话', type: 'input' }
+  { prop: 'companyName', label: t('crm.companyName'), type: 'input' },
+  { prop: 'contactName', label: t('crm.contactName'), type: 'input' },
+  { prop: 'phone', label: t('crm.phone'), type: 'input' }
 ]
 const columns = [
-  { prop: 'companyName', label: '公司名称', minWidth: 150 },
-  { prop: 'contactName', label: '联系人', width: 110 },
-  { prop: 'phone', label: '电话', width: 130 },
-  { prop: 'source', label: '来源', width: 100 },
-  { prop: 'status', label: '状态', width: 90, slot: 'status' },
-  { prop: 'createTime', label: '创建时间', width: 170 }
+  { prop: 'companyName', label: t('crm.companyName'), minWidth: 150 },
+  { prop: 'contactName', label: t('crm.contactName'), width: 110 },
+  { prop: 'phone', label: t('crm.phone'), width: 130 },
+  { prop: 'source', label: t('crm.source'), width: 100 },
+  { prop: 'status', label: t('common.status'), width: 90, slot: 'status' },
+  { prop: 'createTime', label: t('crm.createTime'), width: 170 }
 ]
 const formItems = [
-  { prop: 'companyName', label: '公司名称', type: 'input', span: 12 },
-  { prop: 'contactName', label: '联系人', type: 'input', span: 12 },
-  { prop: 'phone', label: '电话', type: 'input', span: 12 },
-  { prop: 'source', label: '来源', type: 'select', span: 12, options: [{ value: '官网', label: '官网' }, { value: '推荐', label: '推荐' }, { value: '展会', label: '展会' }] },
-  { prop: 'remark', label: '备注', type: 'textarea', span: 24 }
+  { prop: 'companyName', label: t('crm.companyName'), type: 'input', span: 12 },
+  { prop: 'contactName', label: t('crm.contactName'), type: 'input', span: 12 },
+  { prop: 'phone', label: t('crm.phone'), type: 'input', span: 12 },
+  { prop: 'source', label: t('crm.source'), type: 'select', span: 12, options: [{ value: t('crm.official'), label: t('crm.official') }, { value: t('crm.referral'), label: t('crm.referral') }, { value: t('crm.exhibition'), label: t('crm.exhibition') }] },
+  { prop: 'remark', label: t('crm.remark'), type: 'textarea', span: 24 }
 ]
-const formRules = { companyName: [{ required: true, message: '请输入公司名称', trigger: 'blur' }] }
+const formRules = { companyName: [{ required: true, message: t('crm.companyName') + ' required', trigger: 'blur' }] }
 
 const loading = ref(false), tableData = ref([]), total = ref(0), selectedRows = ref([])
 const dialogVisible = ref(false), dialogTitle = ref(''), submitLoading = ref(false), formRef = ref(null)
@@ -65,18 +68,18 @@ function handleReset() { Object.keys(queryParams).forEach(k => { if (k !== 'page
 function handlePageChange(p) { queryParams.pageNum = p; loadData() }
 function handleSizeChange(s) { queryParams.pageSize = s; queryParams.pageNum = 1; loadData() }
 function handleSelectionChange(r) { selectedRows.value = r }
-function handleAdd() { dialogTitle.value = '新增线索'; Object.keys(formData).forEach(k => formData[k] = ''); formData.id = undefined; dialogVisible.value = true }
-function handleEdit(r) { dialogTitle.value = '编辑线索'; Object.assign(formData, r); dialogVisible.value = true }
+function handleAdd() { dialogTitle.value = t('crm.addLead'); Object.keys(formData).forEach(k => formData[k] = ''); formData.id = undefined; dialogVisible.value = true }
+function handleEdit(r) { dialogTitle.value = t('crm.editLead'); Object.assign(formData, r); dialogVisible.value = true }
 function cancelDialog() { dialogVisible.value = false; formRef.value?.resetFields() }
 async function handleSubmit() {
   const valid = await formRef.value?.validate().catch(() => false); if (!valid) return
   submitLoading.value = true
-  try { await new Promise(r => setTimeout(r, 500)); ElMessage.success('操作成功'); dialogVisible.value = false; loadData() }
-  catch { ElMessage.error('操作失败') }
+  try { await new Promise(r => setTimeout(r, 500)); ElMessage.success(t('common.success')); dialogVisible.value = false; loadData() }
+  catch { ElMessage.error(t('common.failed')) }
   finally { submitLoading.value = false }
 }
-async function handleDelete(row) { await ElMessageBox.confirm('确定删除?', '提示', { type: 'warning' }); ElMessage.success('删除成功'); loadData() }
-async function handleBatchDelete() { if (!selectedRows.value.length) return ElMessage.warning('请选择数据'); await ElMessageBox.confirm('确定?', '提示', { type: 'warning' }); ElMessage.success('删除成功'); loadData() }
+async function handleDelete(row) { await ElMessageBox.confirm(t('common.confirmDelete'), t('header.tips'), { type: 'warning' }); ElMessage.success(t('common.success')); loadData() }
+async function handleBatchDelete() { if (!selectedRows.value.length) return ElMessage.warning(t('common.noData')); await ElMessageBox.confirm(t('common.confirmDelete'), t('header.tips'), { type: 'warning' }); ElMessage.success(t('common.success')); loadData() }
 onMounted(() => loadData())
 </script>
 

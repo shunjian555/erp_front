@@ -21,7 +21,18 @@ router.beforeEach(async (to, from, next) => {
       next({ path: '/' })
       NProgress.done()
     } else {
-      // 已登录，直接放行（路由已在初始化时全部注册）
+      // 页面刷新后 permissions 为空，需要重新获取用户信息
+      if (userStore.permissions.length === 0) {
+        try {
+          await userStore.getUserInfo()
+        } catch (e) {
+          // 获取失败，清除 token 并跳转登录
+          await userStore.logout()
+          next(`/login?redirect=${to.path}`)
+          NProgress.done()
+          return
+        }
+      }
       next()
     }
   } else {

@@ -153,6 +153,7 @@ export default [
         total: 42,
         recordName: "线索",
         fields: {
+          companyName: "{{name}}",
           leadName: "{{name}}",
           source: ["官网", "电话", "展会", "推荐", "广告"],
           contactName: genCName(),

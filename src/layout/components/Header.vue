@@ -21,15 +21,22 @@
         </div>
       </el-tooltip> -->
 
+      <!-- 语言切换 -->
+      <!-- <el-tooltip :content="t('header.language')" placement="bottom" :show-after="300">
+        <div class="navbar-action lang-switch" @click="toggleLanguage">
+          <span class="lang-text">{{ isEn ? '中' : 'EN' }}</span>
+        </div>
+      </el-tooltip> -->
+
       <!-- 全屏切换 -->
-      <el-tooltip content="全屏" placement="bottom" :show-after="300">
+      <el-tooltip :content="t('header.fullscreen')" placement="bottom" :show-after="300">
         <div class="navbar-action" @click="toggleFullScreen">
           <el-icon :size="16"><FullScreen /></el-icon>
         </div>
       </el-tooltip>
 
       <!-- 主题切换 -->
-      <el-tooltip content="切换主题" placement="bottom" :show-after="300">
+      <el-tooltip :content="t('header.switchTheme')" placement="bottom" :show-after="300">
         <div class="navbar-action" @click="toggleTheme">
           <el-icon :size="16"><Sunny v-if="isDark" /><Moon v-else /></el-icon>
         </div>
@@ -46,8 +53,8 @@
         </template>
         <div class="notification-panel">
           <div class="notification-header">
-            <span class="title">消息通知</span>
-            <el-button type="primary" link size="small">全部已读</el-button>
+            <span class="title">{{ t('header.messageNotification') }}</span>
+            <el-button type="primary" link size="small">{{ t('header.markAllRead') }}</el-button>
           </div>
           <div class="notification-list">
             <div
@@ -63,7 +70,7 @@
                 <span class="notify-time">{{ item.time }}</span>
               </div>
             </div>
-            <el-empty v-if="!notifications.length" description="暂无消息" :image-size="80" />
+            <el-empty v-if="!notifications.length" :description="t('header.noMessages')" :image-size="80" />
           </div>
         </div>
       </el-popover>
@@ -89,17 +96,17 @@
               </el-avatar>
               <div class="info-text" style="width: 50px;">
                 <p class="name">{{ username }}</p>
-                <p class="role">管理员</p>
+                <p class="role">{{ t('header.admin') }}</p>
               </div>
             </div>
             <el-dropdown-item divided command="profile">
-              <el-icon><User /></el-icon>个人中心
+              <el-icon><User /></el-icon>{{ t('header.personalCenter') }}
             </el-dropdown-item>
             <el-dropdown-item command="settings">
-              <el-icon><Setting /></el-icon>系统设置
+              <el-icon><Setting /></el-icon>{{ t('header.systemSettings') }}
             </el-dropdown-item>
             <el-dropdown-item divided command="logout">
-              <el-icon><SwitchButton /></el-icon>退出登录
+              <el-icon><SwitchButton /></el-icon>{{ t('header.logout') }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -118,14 +125,19 @@ import {
 } from '@element-plus/icons-vue'
 import { useAppStore } from '@/stores/app'
 import { useUserStore } from '@/stores/user'
+import { useI18n } from 'vue-i18n'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import en from 'element-plus/es/locale/lang/en'
 import Breadcrumb from './Breadcrumb.vue'
 
 const router = useRouter()
 const appStore = useAppStore()
 const userStore = useUserStore()
+const { t, locale } = useI18n()
 
 const isCollapsed = computed(() => appStore.sidebarCollapsed)
 const isDark = computed(() => appStore.theme === 'dark')
+const isEn = computed(() => appStore.language === 'en-US')
 const username = computed(() => userStore.username)
 const avatar = computed(() => userStore.avatar)
 
@@ -155,6 +167,18 @@ function toggleTheme() {
   appStore.toggleTheme()
 }
 
+// 语言切换
+function toggleLanguage() {
+  const newLang = appStore.language === 'zh-CN' ? 'en-US' : 'zh-CN'
+  appStore.setLanguage(newLang)
+  locale.value = newLang
+  // 同步 Element Plus 语言包
+  const elLocale = newLang === 'en-US' ? en : zhCn
+  document.querySelector('#app')?.__vue_app__?.config?.globalProperties?.$locale?.value
+  // 通过重新挂载 Element Plus locale 实现切换
+  window.location.reload()
+}
+
 // 全局搜索
 function handleSearch() {
   console.log('打开全局搜索')
@@ -165,9 +189,9 @@ async function handleCommand(command) {
   switch (command) {
     case 'logout':
       try {
-        await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        await ElMessageBox.confirm(t('header.confirmLogout'), t('header.tips'), {
+          confirmButtonText: t('common.confirm'),
+          cancelButtonText: t('common.cancel'),
           type: 'warning'
         })
         await userStore.logout()
@@ -284,6 +308,22 @@ async function handleCommand(command) {
     :deep(.el-badge__content) {
       top: 4px;
       right: 4px;
+    }
+  }
+
+  &.lang-switch {
+    width: auto;
+    padding: 0 8px;
+
+    .lang-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      letter-spacing: 0;
+    }
+
+    &:hover .lang-text {
+      color: var(--primary-color);
     }
   }
 }

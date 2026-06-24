@@ -70,6 +70,7 @@ const menuRoutes = computed(() => {
     const result = { path: item.path }
     const meta = {}
     if (item.title) meta.title = item.title
+    if (item.titleKey) meta.titleKey = item.titleKey
     if (item.icon) meta.icon = item.icon
     if (item.affix) meta.affix = item.affix
     if (Object.keys(meta).length) result.meta = meta

@@ -3,9 +3,9 @@
     <BaseSearch :search-items="searchItems" @search="handleSearch" @reset="handleReset" />
     <div class="table-toolbar">
       <div class="toolbar-left">
-        <el-button type="primary" :icon="Plus" v-permission="['crm:contact:add']" @click="handleAdd">新增联系人</el-button>
-        <el-button :icon="Delete" plain @click="handleBatchDelete">批量删除</el-button>
-        <el-button :icon="Download" plain>导出</el-button>
+        <el-button type="primary" :icon="Plus" v-permission="['crm:contact:add']" @click="handleAdd">{{ t('crm.addContact') }}</el-button>
+        <el-button :icon="Delete" plain @click="handleBatchDelete">{{ t('crm.batchDelete') }}</el-button>
+        <el-button :icon="Download" plain>{{ t('common.export') }}</el-button>
       </div>
       <div class="toolbar-right">
         <el-button :icon="Refresh" circle @click="loadData" />
@@ -17,8 +17,8 @@
       :show-index="true" @selection-change="handleSelectionChange" @current-change="handlePageChange"
       @size-change="handleSizeChange">
       <template #operation="{ row }">
-        <el-button type="primary" link size="small" @click="handleEdit(row)">编辑</el-button>
-        <el-button type="danger" link size="small" @click="handleDelete(row)">删除</el-button>
+        <el-button type="primary" link size="small" @click="handleEdit(row)">{{ t('common.edit') }}</el-button>
+        <el-button type="danger" link size="small" @click="handleDelete(row)">{{ t('common.delete') }}</el-button>
       </template>
     </BaseTable>
 
@@ -33,35 +33,38 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Delete, Download, Refresh } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
 import BaseSearch from '@/components/BaseSearch.vue'
 import BaseTable from '@/components/BaseTable.vue'
 import BaseDialog from '@/components/BaseDialog.vue'
 import BaseForm from '@/components/BaseForm.vue'
 
+const { t } = useI18n()
+
 const searchItems = [
-  { prop: 'name', label: '姓名', type: 'input' },
-  { prop: 'phone', label: '电话', type: 'input' },
-  { prop: 'customerName', label: '所属客户', type: 'input' }
+  { prop: 'name', label: t('crm.name'), type: 'input' },
+  { prop: 'phone', label: t('crm.phone'), type: 'input' },
+  { prop: 'customerName', label: t('crm.belongCustomer'), type: 'input' }
 ]
 
 const columns = [
-  { prop: 'name', label: '姓名', width: 120 },
-  { prop: 'phone', label: '电话', width: 130 },
-  { prop: 'customerName', label: '所属客户', width: 140 },
-  { prop: 'position', label: '职位', width: 120 },
-  { prop: 'email', label: '邮箱', width: 180 },
-  { prop: 'createTime', label: '创建时间', width: 170 }
+  { prop: 'contactName', label: t('crm.name'), width: 120 },
+  { prop: 'phone', label: t('crm.phone'), width: 130 },
+  { prop: 'customerName', label: t('crm.belongCustomer'), width: 140 },
+  { prop: 'position', label: t('crm.position'), width: 120 },
+  { prop: 'email', label: t('crm.email'), width: 180 },
+  { prop: 'createTime', label: t('crm.createTime'), width: 170 }
 ]
 
 const formItems = [
-  { prop: 'name', label: '姓名', type: 'input', span: 12 },
-  { prop: 'phone', label: '电话', type: 'input', span: 12 },
-  { prop: 'email', label: '邮箱', type: 'input', span: 12 },
-  { prop: 'position', label: '职位', type: 'input', span: 12 },
-  { prop: 'customerName', label: '所属客户', type: 'input', span: 24 },
-  { prop: 'remark', label: '备注', type: 'textarea', span: 24 }
+  { prop: 'name', label: t('crm.name'), type: 'input', span: 12 },
+  { prop: 'phone', label: t('crm.phone'), type: 'input', span: 12 },
+  { prop: 'email', label: t('crm.email'), type: 'input', span: 12 },
+  { prop: 'position', label: t('crm.position'), type: 'input', span: 12 },
+  { prop: 'customerName', label: t('crm.belongCustomer'), type: 'input', span: 24 },
+  { prop: 'remark', label: t('crm.remark'), type: 'textarea', span: 24 }
 ]
-const formRules = { name: [{ required: true, message: '请输入姓名', trigger: 'blur' }] }
+const formRules = { name: [{ required: true, message: t('crm.name') + ' required', trigger: 'blur' }] }
 
 const loading = ref(false), tableData = ref([]), total = ref(0), selectedRows = ref([])
 const dialogVisible = ref(false), dialogTitle = ref(''), submitLoading = ref(false), formRef = ref(null)

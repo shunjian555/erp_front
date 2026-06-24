@@ -18,7 +18,7 @@
           <el-input
             v-if="item.type === 'input' || !item.type"
             v-model="formData[item.prop]"
-            :placeholder="item.placeholder || `请输入${item.label}`"
+            :placeholder="item.placeholder || t('common.inputPlaceholder') + item.label"
             :maxlength="item.maxlength"
             :show-word-limit="!!item.maxlength"
             :disabled="item.disabled"
@@ -29,7 +29,7 @@
             v-else-if="item.type === 'textarea'"
             v-model="formData[item.prop]"
             type="textarea"
-            :placeholder="item.placeholder || `请输入${item.label}`"
+            :placeholder="item.placeholder || t('common.inputPlaceholder') + item.label"
             :rows="item.rows || 3"
             :maxlength="item.maxlength"
             :show-word-limit="!!item.maxlength"
@@ -39,7 +39,7 @@
           <el-select
             v-else-if="item.type === 'select'"
             v-model="formData[item.prop]"
-            :placeholder="item.placeholder || `请选择${item.label}`"
+            :placeholder="item.placeholder || t('common.selectPlaceholder') + item.label"
             :multiple="item.multiple"
             :disabled="item.disabled"
             :filterable="item.filterable !== false"
@@ -58,7 +58,7 @@
             v-else-if="item.type === 'date' || item.type === 'datetime'"
             v-model="formData[item.prop]"
             :type="item.type"
-            :placeholder="item.placeholder || `请选择${item.label}`"
+            :placeholder="item.placeholder || t('common.selectPlaceholder') + item.label"
             :format="item.format || (item.type === 'date' ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm:ss')"
             :value-format="item.valueFormat || (item.type === 'date' ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm:ss')"
             :disabled="item.disabled"
@@ -125,6 +125,9 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: {

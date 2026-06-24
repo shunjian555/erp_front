@@ -59,7 +59,7 @@
       <!-- 操作列 -->
       <el-table-column
         v-if="$slots.operation"
-        label="操作"
+        :label="t('common.operation')"
         :width="operationWidth || '180'"
         fixed="right"
         align="center"
@@ -79,7 +79,7 @@
     <!-- 分页 -->
     <div v-if="showPagination && total > 0" class="pagination-wrapper">
       <div class="pagination-info">
-        共 <span class="total-num">{{ total }}</span> 条记录
+        {{ t('common.total') }} <span class="total-num">{{ total }}</span> {{ t('common.items') }}
       </div>
       <el-pagination
         :current-page="currentPage"
@@ -98,7 +98,10 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BaseEmpty from './BaseEmpty.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   tableData: {

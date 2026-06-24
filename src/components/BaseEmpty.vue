@@ -1,10 +1,12 @@
 <template>
   <div class="base-empty">
-    <el-empty description="暂无数据" :image-size="100" />
+    <el-empty :description="t('common.noData')" :image-size="100" />
   </div>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 </script>
 
 <style lang="scss" scoped>

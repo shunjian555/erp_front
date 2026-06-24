@@ -3,14 +3,14 @@
     <!-- 页面标题 -->
     <div class="page-header">
       <div class="page-title-area">
-        <h2 class="page-title">客户管理</h2>
-        <p class="page-desc">管理系统客户信息，支持新增、编辑、删除及跟进记录</p>
+        <h2 class="page-title">{{ t('crm.customerManage') }}</h2>
+        <p class="page-desc">{{ t('crm.customerDesc') }}</p>
       </div>
       <div class="page-header-actions">
         <el-button type="primary" :icon="Plus" v-permission="['crm:customer:add']" @click="handleAdd">
-          新增客户
+          {{ t('crm.addCustomer') }}
         </el-button>
-        <el-button :icon="Download" plain @click="handleExport">导出数据</el-button>
+        <el-button :icon="Download" plain @click="handleExport">{{ t('common.export') }}</el-button>
       </div>
     </div>
 
@@ -52,11 +52,11 @@
         />
       </template>
       <template #operation="{ row }">
-        <el-button type="primary" link size="small" @click="handleView(row)">详情</el-button>
-        <el-button type="primary" link size="small" @click="handleEdit(row)">编辑</el-button>
-        <el-popconfirm title="确定删除该客户？" @confirm="handleDelete(row)" confirm-button-text="确定" cancel-button-text="取消">
+        <el-button type="primary" link size="small" @click="handleView(row)">{{ t('common.detail') }}</el-button>
+        <el-button type="primary" link size="small" @click="handleEdit(row)">{{ t('common.edit') }}</el-button>
+        <el-popconfirm :title="t('crm.confirmDeleteCustomer')" @confirm="handleDelete(row)" :confirm-button-text="t('common.confirm')" :cancel-button-text="t('common.cancel')">
           <template #reference>
-            <el-button type="danger" link size="small">删除</el-button>
+            <el-button type="danger" link size="small">{{ t('common.delete') }}</el-button>
           </template>
         </el-popconfirm>
       </template>
@@ -68,8 +68,8 @@
       :title="dialogTitle"
       width="680px"
       :confirm-loading="submitLoading"
-      confirm-text="确 定"
-      cancel-text="取 消"
+      :confirm-text="t('common.confirm')"
+      :cancel-text="t('common.cancel')"
       @confirm="handleSubmit"
       @cancel="cancelDialog"
     >
@@ -93,11 +93,11 @@
       <template #header>
         <div class="drawer-header">
           <div class="header-left">
-            <span class="header-title">客户详情</span>
+            <span class="header-title">{{ t('crm.customerDetail') }}</span>
             <el-tag :type="levelMap[currentRow?.level]?.type || 'info'" size="small">{{ levelMap[currentRow?.level]?.label || '' }}</el-tag>
           </div>
           <el-tag :type="currentRow?.status === 1 ? 'success' : 'danger'" size="small" effect="dark">
-            {{ currentRow?.status === 1 ? '正常' : '停用' }}
+            {{ currentRow?.status === 1 ? t('common.normal') : t('common.disable') }}
           </el-tag>
         </div>
       </template>
@@ -106,39 +106,39 @@
         <!-- Tab 切换 -->
         <el-tabs v-model="activeTab" class="detail-tabs">
           <!-- 基本信息 Tab -->
-          <el-tab-pane label="基本信息" name="basic">
+          <el-tab-pane :label="t('crm.basicInfo')" name="basic">
             <div class="info-grid">
-              <div class="info-item"><span class="label">客户名称</span><span class="value bold">{{ currentRow.customerName }}</span></div>
-              <div class="info-item"><span class="label">联系人</span><span class="value">{{ currentRow.contactName }}</span></div>
-              <div class="info-item"><span class="label">手机号</span><span class="value phone">{{ currentRow.phone }}</span></div>
-              <div class="info-item"><span class="label">邮箱</span><span class="value">{{ currentRow.email || '-' }}</span></div>
-              <div class="info-item full"><span class="label">地址</span><span class="value">{{ currentRow.address || '-' }}</span></div>
-              <div class="info-item"><span class="label">创建时间</span><span class="value">{{ currentRow.createTime }}</span></div>
-              <div class="info-item full"><span class="label">备注</span><span class="value remark">{{ currentRow.remark || '暂无备注' }}</span></div>
+              <div class="info-item"><span class="label">{{ t('crm.customerName') }}</span><span class="value bold">{{ currentRow.customerName }}</span></div>
+              <div class="info-item"><span class="label">{{ t('crm.contactName') }}</span><span class="value">{{ currentRow.contactName }}</span></div>
+              <div class="info-item"><span class="label">{{ t('crm.phone') }}</span><span class="value phone">{{ currentRow.phone }}</span></div>
+              <div class="info-item"><span class="label">{{ t('crm.email') }}</span><span class="value">{{ currentRow.email || '-' }}</span></div>
+              <div class="info-item full"><span class="label">{{ t('crm.address') }}</span><span class="value">{{ currentRow.address || '-' }}</span></div>
+              <div class="info-item"><span class="label">{{ t('crm.createTime') }}</span><span class="value">{{ currentRow.createTime }}</span></div>
+              <div class="info-item full"><span class="label">{{ t('crm.remark') }}</span><span class="value remark">{{ currentRow.remark || t('crm.noRemark') }}</span></div>
             </div>
 
             <!-- 快捷操作 -->
             <div class="quick-actions-row">
-              <el-button size="small" :icon="Phone"><el-icon><Phone /></el-icon> 电话联系</el-button>
-              <el-button size="small" :icon="Message"><el-icon><Message /></el-icon> 发送消息</el-button>
-              <el-button size="small" :icon="EditPen"><el-icon><EditPen /></el-icon> 编辑信息</el-button>
+              <el-button size="small" :icon="Phone"><el-icon><Phone /></el-icon> {{ t('crm.phoneCall') }}</el-button>
+              <el-button size="small" :icon="Message"><el-icon><Message /></el-icon> {{ t('crm.emailFollow') }}</el-button>
+              <el-button size="small" :icon="EditPen"><el-icon><EditPen /></el-icon> {{ t('common.edit') }}</el-button>
             </div>
           </el-tab-pane>
 
           <!-- 跟进记录 Tab -->
-          <el-tab-pane label="跟进记录" name="followup">
+          <el-tab-pane :label="t('crm.followRecords')" name="followup">
             <div class="followup-header">
               <div class="followup-stats">
                 <div class="stat-card">
                   <span class="stat-num">{{ followUpList.length }}</span>
-                  <span class="stat-label">总跟进次数</span>
+                  <span class="stat-label">{{ t('crm.followRecords') }}</span>
                 </div>
                 <div class="stat-card">
                   <span class="stat-num">{{ recentDays }}</span>
-                  <span class="stat-label">距上次跟进(天)</span>
+                  <span class="stat-label">{{ t('crm.followTime') }}</span>
                 </div>
               </div>
-              <el-button type="primary" size="small" :icon="Plus" @click="handleAddFollowUp">新增跟进</el-button>
+              <el-button type="primary" size="small" :icon="Plus" @click="handleAddFollowUp">{{ t('crm.addFollow') }}</el-button>
             </div>
 
             <!-- 时间线 -->
@@ -162,12 +162,12 @@
                     <p class="card-content">{{ item.content }}</p>
                     <div class="card-bottom" v-if="item.nextTime">
                       <el-icon><Clock /></el-icon>
-                      <span>下次跟进: {{ item.nextTime }}</span>
+                      <span>{{ t('crm.nextFollowTime') }}: {{ item.nextTime }}</span>
                     </div>
                   </div>
                 </el-timeline-item>
               </el-timeline>
-              <el-empty v-if="!followUpList.length" description="暂无跟进记录" :image-size="80" />
+              <el-empty v-if="!followUpList.length" :description="t('common.noData')" :image-size="80" />
             </div>
           </el-tab-pane>
         </el-tabs>
@@ -177,11 +177,11 @@
     <!-- 新增跟进弹窗 -->
     <BaseDialog
       v-model="followUpDialogVisible"
-      title="新增跟进记录"
+      :title="t('crm.addFollow')"
       width="520px"
       :confirm-loading="followUpLoading"
-      confirm-text="确 定"
-      cancel-text="取 消"
+      :confirm-text="t('common.confirm')"
+      :cancel-text="t('common.cancel')"
       @confirm="handleSubmitFollowUp"
       @cancel="cancelFollowUpDialog"
     >
@@ -200,22 +200,25 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Download, Phone, Message, EditPen, Clock } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
 import BaseSearch from '@/components/BaseSearch.vue'
 import BaseTable from '@/components/BaseTable.vue'
 import BaseDialog from '@/components/BaseDialog.vue'
 import BaseForm from '@/components/BaseForm.vue'
 import { getCustomerList, updateCustomerStatus } from '@/api/crm'
 
+const { t } = useI18n()
+
 // ==================== 搜索配置 ====================
 const searchItems = [
-  { prop: 'customerName', label: '客户名称', type: 'input', defaultValue: '' },
-  { prop: 'contactName', label: '联系人', type: 'input', defaultValue: '' },
-  { prop: 'phone', label: '手机号', type: 'input', defaultValue: '' },
-  { prop: 'level', label: '客户等级', type: 'select',
+  { prop: 'customerName', label: t('crm.customerName'), type: 'input', defaultValue: '' },
+  { prop: 'contactName', label: t('crm.contactName'), type: 'input', defaultValue: '' },
+  { prop: 'phone', label: t('crm.phone'), type: 'input', defaultValue: '' },
+  { prop: 'level', label: t('crm.level'), type: 'select',
     options: [
-      { value: 'A', label: 'A级（重要）' },
-      { value: 'B', label: 'B级（普通）' },
-      { value: 'C', label: 'C级（一般）' }
+      { value: 'A', label: t('crm.levelA') },
+      { value: 'B', label: t('crm.levelB') },
+      { value: 'C', label: t('crm.levelC') }
     ],
     defaultValue: ''
   }
@@ -223,83 +226,83 @@ const searchItems = [
 
 // ==================== 表格列配置 ====================
 const columns = [
-  { prop: 'customerName', label: '客户名称', minWidth: 140, align: 'left' },
-  { prop: 'contactName', label: '联系人', width: 100 },
-  { prop: 'phone', label: '手机号', width: 130 },
-  { prop: 'address', label: '地址', minWidth: 180, showOverflowTooltip: true, align: 'left' },
-  { prop: 'level', label: '等级', width: 90, slot: 'level' },
-  { prop: 'status', label: '状态', width: 80, slot: 'status' },
-  { prop: 'createTime', label: '创建时间', width: 170 }
+  { prop: 'customerName', label: t('crm.customerName'), minWidth: 140, align: 'left' },
+  { prop: 'contactName', label: t('crm.contactName'), width: 100 },
+  { prop: 'phone', label: t('crm.phone'), width: 130 },
+  { prop: 'address', label: t('crm.address'), minWidth: 180, showOverflowTooltip: true, align: 'left' },
+  { prop: 'level', label: t('crm.level'), width: 90, slot: 'level' },
+  { prop: 'status', label: t('common.status'), width: 80, slot: 'status' },
+  { prop: 'createTime', label: t('crm.createTime'), width: 170 }
 ]
 
 // ==================== 表单配置 ====================
 const formItems = [
-  { prop: 'customerName', label: '客户名称 *', type: 'input', span: 12,
-    attrs: { maxlength: 50, showWordLimit: true, placeholder: '请输入客户名称' } },
-  { prop: 'contactName', label: '联系人 *', type: 'input', span: 12,
-    attrs: { maxlength: 20, placeholder: '请输入联系人姓名' } },
-  { prop: 'phone', label: '手机号 *', type: 'input', span: 12,
-    attrs: { maxlength: 11, placeholder: '请输入手机号码' } },
-  { prop: 'email', label: '邮箱', type: 'input', span: 12,
-    attrs: { placeholder: '请输入邮箱地址' } },
-  { prop: 'address', label: '地址', type: 'textarea', rows: 2, span: 24,
-    attrs: { maxlength: 200, showWordLimit: true, placeholder: '请输入详细地址' } },
-  { prop: 'level', label: '客户等级', type: 'select', span: 12,
+  { prop: 'customerName', label: t('crm.customerName') + ' *', type: 'input', span: 12,
+    attrs: { maxlength: 50, showWordLimit: true, placeholder: t('crm.customerName') } },
+  { prop: 'contactName', label: t('crm.contactName') + ' *', type: 'input', span: 12,
+    attrs: { maxlength: 20, placeholder: t('crm.contactName') } },
+  { prop: 'phone', label: t('crm.phone') + ' *', type: 'input', span: 12,
+    attrs: { maxlength: 11, placeholder: t('crm.phone') } },
+  { prop: 'email', label: t('crm.email'), type: 'input', span: 12,
+    attrs: { placeholder: t('crm.email') } },
+  { prop: 'address', label: t('crm.address'), type: 'textarea', rows: 2, span: 24,
+    attrs: { maxlength: 200, showWordLimit: true, placeholder: t('crm.address') } },
+  { prop: 'level', label: t('crm.level'), type: 'select', span: 12,
     options: [
-      { value: 'A', label: 'A级（重要）' },
-      { value: 'B', label: 'B级（普通）' },
-      { value: 'C', label: 'C级（一般）' }
+      { value: 'A', label: t('crm.levelA') },
+      { value: 'B', label: t('crm.levelB') },
+      { value: 'C', label: t('crm.levelC') }
     ]
   },
-  { prop: 'status', label: '状态', type: 'radio', span: 12,
-    options: [{ value: 1, label: '正常' }, { value: 0, label: '停用' }]
+  { prop: 'status', label: t('common.status'), type: 'radio', span: 12,
+    options: [{ value: 1, label: t('common.normal') }, { value: 0, label: t('common.disable') }]
   },
-  { prop: 'remark', label: '备注', type: 'textarea', rows: 3, span: 24,
-    attrs: { maxlength: 500, showWordLimit: true, placeholder: '请输入备注信息（可选）' } }
+  { prop: 'remark', label: t('crm.remark'), type: 'textarea', rows: 3, span: 24,
+    attrs: { maxlength: 500, showWordLimit: true, placeholder: t('crm.remark') } }
 ]
 
 const formRules = {
-  customerName: [{ required: true, message: '请输入客户名称', trigger: 'blur' }],
-  contactName: [{ required: true, message: '请输入联系人', trigger: 'blur' }],
+  customerName: [{ required: true, message: t('crm.customerName'), trigger: 'blur' }],
+  contactName: [{ required: true, message: t('crm.contactName'), trigger: 'blur' }],
   phone: [
-    { required: true, message: '请输入手机号', trigger: 'blur' },
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号格式', trigger: 'blur' }
+    { required: true, message: t('crm.phone'), trigger: 'blur' },
+    { pattern: /^1[3-9]\d{9}$/, message: t('crm.phone'), trigger: 'blur' }
   ],
-  email: [{ type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }]
+  email: [{ type: 'email', message: t('crm.email'), trigger: 'blur' }]
 }
 
 // ==================== 跟进记录表单配置 ====================
 const followUpFormItems = [
   {
     prop: 'type',
-    label: '跟进方式 *',
+    label: t('crm.followType') + ' *',
     type: 'select',
     options: [
-      { value: 'phone', label: '电话沟通' },
-      { value: 'visit', label: '上门拜访' },
-      { value: 'email', label: '邮件往来' },
-      { value: 'wechat', label: '微信沟通' },
-      { value: 'meeting', label: '会议讨论' }
+      { value: 'phone', label: t('crm.phoneCall') },
+      { value: 'visit', label: t('crm.visit') },
+      { value: 'email', label: t('crm.emailFollow') },
+      { value: 'wechat', label: t('crm.wechat') },
+      { value: 'meeting', label: t('crm.other') }
     ]
   },
   {
     prop: 'content',
-    label: '跟进内容 *',
+    label: t('crm.followContent') + ' *',
     type: 'textarea',
     rows: 4,
-    attrs: { maxlength: 500, showWordLimit: true, placeholder: '请详细描述本次跟进的内容、结果、客户反馈等' }
+    attrs: { maxlength: 500, showWordLimit: true, placeholder: t('crm.followContent') }
   },
   {
     prop: 'nextTime',
-    label: '下次跟进时间',
+    label: t('crm.nextFollowTime'),
     type: 'datetime',
-    attrs: { placeholder: '选择下次计划跟进的时间', format: 'YYYY-MM-DD HH:mm', valueFormat: 'YYYY-MM-DD HH:mm:ss' }
+    attrs: { placeholder: t('crm.nextFollowTime'), format: 'YYYY-MM-DD HH:mm', valueFormat: 'YYYY-MM-DD HH:mm:ss' }
   }
 ]
 
 const followUpFormRules = {
-  type: [{ required: true, message: '请选择跟进方式', trigger: 'change' }],
-  content: [{ required: true, message: '请输入跟进内容', trigger: 'blur' }]
+  type: [{ required: true, message: t('crm.followType'), trigger: 'change' }],
+  content: [{ required: true, message: t('crm.followContent'), trigger: 'blur' }]
 }
 
 // ==================== 数据状态 ====================
@@ -309,7 +312,7 @@ const tableData = ref([])
 const total = ref(0)
 const selectedRows = ref([])
 const dialogVisible = ref(false)
-const dialogTitle = ref('新增客户')
+const dialogTitle = ref(t('crm.addCustomer'))
 const submitLoading = ref(false)
 const formRef = ref(null)
 
@@ -464,20 +467,20 @@ async function handleStatusChange(row, val) {
   try {
     await updateCustomerStatus(row.id, val ? 1 : 0)
     row.status = val ? 1 : 0
-    ElMessage.success(val ? '已启用' : '已停用')
+    ElMessage.success(val ? t('common.enable') : t('common.disable'))
   } catch (e) {
-    ElMessage.error('操作失败')
+    ElMessage.error(t('common.failed'))
   }
 }
 
 function handleAdd() {
-  dialogTitle.value = '新增客户'
+  dialogTitle.value = t('crm.addCustomer')
   resetForm()
   dialogVisible.value = true
 }
 
 function handleEdit(row) {
-  dialogTitle.value = '编辑客户'
+  dialogTitle.value = t('crm.editCustomer')
   Object.assign(formData, { ...row })
   dialogVisible.value = true
 }
@@ -510,23 +513,23 @@ async function handleSubmit() {
   submitLoading.value = true
   try {
     await new Promise((resolve) => setTimeout(resolve, 500))
-    ElMessage.success(formData.id ? '编辑成功' : '新增成功')
+    ElMessage.success(t('common.success'))
     dialogVisible.value = false
     loadData()
   } catch (e) {
-    ElMessage.error('操作失败')
+    ElMessage.error(t('common.failed'))
   } finally {
     submitLoading.value = false
   }
 }
 
 async function handleDelete(row) {
-  ElMessage.success('删除成功')
+  ElMessage.success(t('common.success'))
   loadData()
 }
 
 function handleExport() {
-  ElMessage.success('导出功能开发中...')
+  ElMessage.success(t('common.export') + '...')
 }
 
 // ==================== 跟进记录方法 ====================
@@ -562,9 +565,9 @@ async function handleSubmitFollowUp() {
 
     followUpList.value.unshift(newItem)
     followUpDialogVisible.value = false
-    ElMessage.success('跟进记录添加成功')
+    ElMessage.success(t('common.success'))
   } catch (e) {
-    ElMessage.error('添加失败')
+    ElMessage.error(t('common.failed'))
   } finally {
     followUpLoading.value = false
   }

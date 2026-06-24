@@ -9,7 +9,7 @@
         class="tags-view-item"
         @contextmenu.prevent="openContextMenu(tag, $event)"
       >
-        {{ tag.meta?.title }}
+        {{ tag.meta?.titleKey ? t(tag.meta.titleKey) : tag.meta?.title }}
         <el-icon
           v-if="!tag.meta?.affix"
           class="close-icon"
@@ -26,10 +26,10 @@
       class="context-menu"
       :style="{ left: contextMenuLeft + 'px', top: contextMenuTop + 'px' }"
     >
-      <li @click="refreshSelectedTag">刷新页面</li>
-      <li v-if="!selectedTag?.meta?.affix" @click="closeSelectedTag">关闭当前</li>
-      <li @click="closeOtherTags">关闭其他</li>
-      <li @click="closeAllTags">关闭全部</li>
+      <li @click="refreshSelectedTag">{{ t('tagsView.refreshPage') }}</li>
+      <li v-if="!selectedTag?.meta?.affix" @click="closeSelectedTag">{{ t('tagsView.closeCurrent') }}</li>
+      <li @click="closeOtherTags">{{ t('tagsView.closeOther') }}</li>
+      <li @click="closeAllTags">{{ t('tagsView.closeAll') }}</li>
     </ul>
   </div>
 </template>
@@ -38,7 +38,9 @@
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTagsViewStore } from '@/stores/tagsView'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const tagsViewStore = useTagsViewStore()

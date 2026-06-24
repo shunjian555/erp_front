@@ -11,6 +11,8 @@ export default {
     const permissions = userStore.permissions
 
     if (value && value instanceof Array && value.length > 0) {
+      // 超级管理员拥有所有权限
+      if (permissions.includes('*')) return
       const hasPermission = permissions.some((permission) => value.includes(permission))
       if (!hasPermission) {
         el.parentNode && el.parentNode.removeChild(el)

@@ -7,8 +7,8 @@
     <div class="login-card">
       <div class="login-header">
         <img src="@/assets/logo.svg" alt="logo" class="login-logo" />
-        <h1 class="login-title">Smart ERP</h1>
-        <p class="login-subtitle">智能企业资源管理系统</p>
+        <h1 class="login-title">{{ t('login.title') }}</h1>
+        <p class="login-subtitle">{{ t('login.subtitle') }}</p>
       </div>
 
       <el-form
@@ -21,7 +21,7 @@
         <el-form-item prop="username">
           <el-input
             v-model="loginForm.username"
-            placeholder="请输入用户名"
+            :placeholder="t('login.username')"
             prefix-icon="User"
             clearable
           />
@@ -31,7 +31,7 @@
           <el-input
             v-model="loginForm.password"
             type="password"
-            placeholder="请输入密码"
+            :placeholder="t('login.password')"
             prefix-icon="Lock"
             show-password
             clearable
@@ -42,7 +42,7 @@
           <div class="captcha-row">
             <el-input
               v-model="loginForm.captcha"
-              placeholder="请输入验证码"
+              :placeholder="t('login.captcha')"
               prefix-icon="Key"
               clearable
               class="captcha-input"
@@ -53,14 +53,14 @@
               width="120"
               height="40"
               @click="refreshCaptcha"
-              title="点击刷新验证码"
+              :title="t('login.captchaRefresh')"
             />
           </div>
         </el-form-item>
 
         <div class="login-options">
-          <el-checkbox v-model="rememberPassword">记住密码</el-checkbox>
-          <el-link type="primary" :underline="false">忘记密码？</el-link>
+          <el-checkbox v-model="rememberPassword">{{ t('login.rememberPassword') }}</el-checkbox>
+          <el-link type="primary" :underline="false">{{ t('login.forgotPassword') }}</el-link>
         </div>
 
         <el-form-item>
@@ -70,13 +70,13 @@
             class="login-btn"
             @click="handleLogin"
           >
-            {{ loading ? '登录中...' : '登 录' }}
+            {{ loading ? t('login.loginLoading') : t('login.loginBtn') }}
           </el-button>
         </el-form-item>
       </el-form>
 
       <div class="login-footer">
-        <p>默认账号: admin / 123456</p>
+        <p>{{ t('login.defaultAccount') }}</p>
       </div>
     </div>
   </div>
@@ -86,8 +86,10 @@
 import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 
+const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
@@ -105,12 +107,12 @@ const loginForm = reactive({
 })
 
 const loginRules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  username: [{ required: true, message: t('login.usernameRequired'), trigger: 'blur' }],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不少于6位', trigger: 'blur' }
+    { required: true, message: t('login.passwordRequired'), trigger: 'blur' },
+    { min: 6, message: t('login.passwordLength'), trigger: 'blur' }
   ],
-  captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
+  captcha: [{ required: true, message: t('login.captchaRequired'), trigger: 'blur' }]
 }
 
 // 生成随机验证码文本
@@ -190,7 +192,7 @@ async function handleLogin() {
 
   // 验证码校验
   if (loginForm.captcha.toLowerCase() !== captchaCode.value.toLowerCase()) {
-    ElMessage.error('验证码错误，请重新输入')
+    ElMessage.error(t('login.captchaError'))
     refreshCaptcha()
     return
   }
@@ -199,7 +201,7 @@ async function handleLogin() {
   try {
     await userStore.login(loginForm)
     await userStore.getUserInfo()
-    ElMessage.success('登录成功')
+    ElMessage.success(t('login.loginSuccess'))
 
     // 记住密码
     if (rememberPassword.value) {

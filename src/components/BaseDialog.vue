@@ -13,9 +13,9 @@
     </div>
     <template #footer v-if="showFooter">
       <div class="dialog-footer">
-        <el-button @click="handleClose">取 消</el-button>
+        <el-button @click="handleClose">{{ cancelText || t('common.cancel') }}</el-button>
         <el-button type="primary" :loading="confirmLoading" @click="handleConfirm">
-          确 定
+          {{ confirmText || t('common.confirm') }}
         </el-button>
       </div>
     </template>
@@ -24,6 +24,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: {
@@ -32,7 +35,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: '提示'
+    default: ''
   },
   width: {
     type: String,
@@ -49,6 +52,14 @@ const props = defineProps({
   confirmLoading: {
     type: Boolean,
     default: false
+  },
+  confirmText: {
+    type: String,
+    default: ''
+  },
+  cancelText: {
+    type: String,
+    default: ''
   }
 })
 

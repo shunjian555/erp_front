@@ -5,7 +5,7 @@
       <el-icon v-if="item.meta?.icon">
         <component :is="item.meta.icon" />
       </el-icon>
-      <span>{{ item.meta?.title }}</span>
+      <span>{{ item.meta?.titleKey ? t(item.meta.titleKey) : item.meta?.title }}</span>
     </template>
     <SidebarItem
       v-for="child in visibleChildren"
@@ -20,7 +20,7 @@
     <el-icon v-if="item.meta?.icon">
       <component :is="item.meta.icon" />
     </el-icon>
-    <template #title>{{ item.meta?.title }}</template>
+    <template #title>{{ item.meta?.titleKey ? t(item.meta.titleKey) : item.meta?.title }}</template>
   </el-menu-item>
 
   <!-- 只有一个子菜单时直接显示 -->
@@ -28,12 +28,15 @@
     <el-icon v-if="item.meta?.icon || onlyOneChild.meta?.icon">
       <component :is="(onlyOneChild.meta?.icon) || (item.meta?.icon)" />
     </el-icon>
-    <template #title>{{ onlyOneChild.meta?.title || item.meta?.title }}</template>
+    <template #title>{{ (onlyOneChild.meta?.titleKey ? t(onlyOneChild.meta.titleKey) : onlyOneChild.meta?.title) || (item.meta?.titleKey ? t(item.meta.titleKey) : item.meta?.title) }}</template>
   </el-menu-item>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   item: {

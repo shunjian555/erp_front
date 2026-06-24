@@ -11,7 +11,7 @@
             <el-input
               v-if="item.type === 'input' || !item.type"
               v-model="searchForm[item.prop]"
-              :placeholder="'请输入' + item.label"
+              :placeholder="t('common.inputPlaceholder') + item.label"
               clearable
               :prefix-icon="getInputIcon(item)"
               @keyup.enter="handleSearch"
@@ -19,7 +19,7 @@
             <el-select
               v-else-if="item.type === 'select'"
               v-model="searchForm[item.prop]"
-              :placeholder="'请选择' + item.label"
+              :placeholder="t('common.selectPlaceholder') + item.label"
               clearable
               filterable
               style="width: 100%"
@@ -35,7 +35,7 @@
               v-else-if="item.type === 'date'"
               v-model="searchForm[item.prop]"
               type="date"
-              :placeholder="'请选择' + item.label"
+              :placeholder="t('common.selectPlaceholder') + item.label"
               :value-format="item.valueFormat || 'YYYY-MM-DD'"
               style="width: 100%"
             />
@@ -43,9 +43,9 @@
               v-else-if="item.type === 'daterange'"
               v-model="searchForm[item.prop]"
               type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
+              :range-separator="t('common.to')"
+              :start-placeholder="t('common.startDate')"
+              :end-placeholder="t('common.endDate')"
               :value-format="item.valueFormat || 'YYYY-MM-DD'"
               style="width: 100%"
             />
@@ -55,8 +55,8 @@
         <!-- 操作按钮 -->
         <el-col :span="btnSpan">
           <el-form-item class="search-actions">
-            <el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
-            <el-button :icon="RefreshLeft" @click="handleReset">重置</el-button>
+            <el-button type="primary" :icon="Search" @click="handleSearch">{{ t('common.search') }}</el-button>
+            <el-button :icon="RefreshLeft" @click="handleReset">{{ t('common.reset') }}</el-button>
             <el-button
               v-if="needCollapse"
               text
@@ -64,7 +64,7 @@
               @click="toggleCollapse"
               class="collapse-btn"
             >
-              {{ isCollapsed ? '展开' : '收起' }}
+              {{ isCollapsed ? t('common.expand') : t('common.collapse') }}
               <el-icon class="collapse-icon"><ArrowUp v-if="!isCollapsed" /><ArrowDown v-else /></el-icon>
             </el-button>
           </el-form-item>
@@ -76,7 +76,10 @@
 
 <script setup>
 import { ref, computed, reactive } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Search, RefreshLeft, ArrowUp, ArrowDown } from '@element-plus/icons-vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   searchItems: {

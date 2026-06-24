@@ -10,7 +10,7 @@
               <p class="stat-value"><CountUp :end-val="item.value" :format="item.format" /></p>
               <p class="stat-trend" :class="item.trend > 0 ? 'up' : 'down'">
                 <el-icon><ArrowUp v-if="item.trend > 0" /><ArrowDown v-else /></el-icon>
-                {{ Math.abs(item.trend) }}% 较上月
+                {{ Math.abs(item.trend) }}% {{ t('dashboard.vsLastMonth') }}
               </p>
             </div>
             <div class="stat-icon" :style="{ backgroundColor: item.bgColor }">
@@ -26,13 +26,13 @@
     <!-- 图表区域 -->
     <el-row :gutter="16" class="chart-row">
       <el-col :xs="24" :lg="16">
-        <BaseCard title="销售趋势" shadow="hover">
+        <BaseCard :title="t('dashboard.salesTrend')" shadow="hover">
           <template #header>
             <div class="chart-header-extra">
               <el-radio-group v-model="trendRange" size="small" @change="loadSalesTrend">
-                <el-radio-button label="7">近7天</el-radio-button>
-                <el-radio-button label="30">近30天</el-radio-button>
-                <el-radio-button label="90">近90天</el-radio-button>
+                <el-radio-button label="7">{{ t('dashboard.last7Days') }}</el-radio-button>
+                <el-radio-button label="30">{{ t('dashboard.last30Days') }}</el-radio-button>
+                <el-radio-button label="90">{{ t('dashboard.last90Days') }}</el-radio-button>
               </el-radio-group>
             </div>
           </template>
@@ -40,7 +40,7 @@
         </BaseCard>
       </el-col>
       <el-col :xs="24" :lg="8">
-        <BaseCard title="销售排行 Top10" shadow="hover">
+        <BaseCard :title="t('dashboard.salesRanking')" shadow="hover">
           <BaseChart :option="rankingOption" height="360px" />
         </BaseCard>
       </el-col>
@@ -49,23 +49,23 @@
     <!-- 底部区域 -->
     <el-row :gutter="16" class="bottom-row">
       <el-col :xs="24" :lg="12">
-        <BaseCard title="库存预警" shadow="hover">
+        <BaseCard :title="t('dashboard.inventoryWarning')" shadow="hover">
           <template #header>
-            <el-tag type="danger" size="small" effect="dark">{{ warningList.length }} 条预警</el-tag>
+            <el-tag type="danger" size="small" effect="dark">{{ warningList.length }} {{ t('dashboard.warnings') }}</el-tag>
           </template>
-          <el-table :data="warningList" size="small" stripe max-height="300" empty-text="暂无库存预警">
-            <el-table-column prop="goodsName" label="商品名称" min-width="120" show-overflow-tooltip />
-            <el-table-column prop="currentStock" label="当前库存" width="90" align="center">
+          <el-table :data="warningList" size="small" stripe max-height="300" :empty-text="t('dashboard.noInventoryWarning')">
+            <el-table-column prop="goodsName" :label="t('dashboard.goodsName')" min-width="120" show-overflow-tooltip />
+            <el-table-column prop="currentStock" :label="t('dashboard.currentStock')" width="90" align="center">
               <template #default="{ row }">
                 <span :style="{ color: row.currentStock === 0 ? '#f56c6c' : '#e6a23c' }">{{ row.currentStock }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="safeStock" label="安全库存" width="90" align="center" />
-            <el-table-column prop="unit" label="单位" width="60" align="center" />
-            <el-table-column label="状态" width="80" align="center">
+            <el-table-column prop="safeStock" :label="t('dashboard.safeStock')" width="90" align="center" />
+            <el-table-column prop="unit" :label="t('dashboard.unit')" width="60" align="center" />
+            <el-table-column :label="t('dashboard.status')" width="80" align="center">
               <template #default="{ row }">
                 <el-tag :type="row.currentStock === 0 ? 'danger' : 'warning'" size="small" effect="dark">
-                  {{ row.currentStock === 0 ? '缺货' : '预警' }}
+                  {{ row.currentStock === 0 ? t('dashboard.outOfStock') : t('dashboard.warning') }}
                 </el-tag>
               </template>
             </el-table-column>
@@ -73,7 +73,7 @@
         </BaseCard>
       </el-col>
       <el-col :xs="24" :lg="12">
-        <BaseCard title="待办事项" shadow="hover">
+        <BaseCard :title="t('dashboard.todoList')" shadow="hover">
           <div class="todo-list">
             <div
               v-for="todo in todoList"
@@ -88,7 +88,7 @@
               </div>
               <div class="todo-info">
                 <span class="todo-title">{{ todo.title }}</span>
-                <span class="todo-count">{{ todo.count }} 条待处理</span>
+                <span class="todo-count">{{ todo.count }} {{ t('dashboard.pendingItems') }}</span>
               </div>
               <el-badge :value="todo.count" :max="99" :type="todo.count > 10 ? 'danger' : 'primary'" class="todo-badge" />
               <el-icon class="todo-arrow"><ArrowRight /></el-icon>
@@ -101,7 +101,7 @@
     <!-- 快捷操作 -->
     <el-row :gutter="16" class="quick-action-row">
       <el-col :span="24">
-        <BaseCard title="快捷操作" shadow="hover">
+        <BaseCard :title="t('dashboard.quickActions')" shadow="hover">
           <div class="quick-actions">
             <div
               v-for="action in quickActions"
@@ -127,6 +127,7 @@
 import { ref, onMounted, computed, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ArrowUp, ArrowDown, ArrowRight } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
 import BaseCard from '@/components/BaseCard.vue'
 import BaseChart from '@/components/BaseChart.vue'
 import CountUp from './components/CountUp.vue'
@@ -138,14 +139,15 @@ import {
   getTodoList
 } from '@/api/dashboard'
 
+const { t } = useI18n()
 const router = useRouter()
 
 // ==================== 统计卡片数据 ====================
 const statCards = reactive([
-  { title: '销售额', value: 0, icon: 'TrendCharts', format: 'money', trend: 12.5, bgColor: '#ecf5ff', iconColor: '#409eff' },
-  { title: '订单数', value: 0, icon: 'Document', format: 'number', trend: 8.3, bgColor: '#f0f9eb', iconColor: '#67c23a' },
-  { title: '采购额', value: 0, icon: 'ShoppingCart', format: 'money', trend: -3.2, bgColor: '#fdf6ec', iconColor: '#e6a23c' },
-  { title: '利润', value: 0, icon: 'Money', format: 'money', trend: 15.8, bgColor: '#fef0f0', iconColor: '#f56c6c' }
+  { titleKey: 'dashboard.salesAmount', title: t('dashboard.salesAmount'), value: 0, icon: 'TrendCharts', format: 'money', trend: 12.5, bgColor: '#ecf5ff', iconColor: '#409eff' },
+  { titleKey: 'dashboard.orderCount', title: t('dashboard.orderCount'), value: 0, icon: 'Document', format: 'number', trend: 8.3, bgColor: '#f0f9eb', iconColor: '#67c23a' },
+  { titleKey: 'dashboard.purchaseAmount', title: t('dashboard.purchaseAmount'), value: 0, icon: 'ShoppingCart', format: 'money', trend: -3.2, bgColor: '#fdf6ec', iconColor: '#e6a23c' },
+  { titleKey: 'dashboard.profit', title: t('dashboard.profit'), value: 0, icon: 'Money', format: 'money', trend: 15.8, bgColor: '#fef0f0', iconColor: '#f56c6c' }
 ])
 
 // 销售趋势时间范围
@@ -279,14 +281,14 @@ const warningList = ref([])
 const todoList = ref([])
 
 // ==================== 快捷操作 ====================
-const quickActions = [
-  { title: '新建订单', icon: 'DocumentAdd', path: '/sales/order', bgColor: '#ecf5ff', color: '#409eff' },
-  { title: '采购申请', icon: 'EditPen', path: '/purchase/request', bgColor: '#f0f9eb', color: '#67c23a' },
-  { title: '客户管理', icon: 'User', path: '/crm/customer', bgColor: '#fdf6ec', color: '#e6a23c' },
-  { title: '商品管理', icon: 'Goods', path: '/product/goods', bgColor: '#fef0f0', color: '#f56c6c' },
-  { title: '审批中心', icon: 'Finished', path: '/oa/approval', bgColor: '#f4f4f5', color: '#909399' },
-  { title: '库存查询', icon: 'Box', path: '/inventory/query', bgColor: '#f9f0ff', color: '#b37feb' }
-]
+const quickActions = computed(() => [
+  { title: t('dashboard.newOrder'), icon: 'DocumentAdd', path: '/sales/order', bgColor: '#ecf5ff', color: '#409eff' },
+  { title: t('dashboard.purchaseRequest'), icon: 'EditPen', path: '/purchase/request', bgColor: '#f0f9eb', color: '#67c23a' },
+  { title: t('dashboard.customerManage'), icon: 'User', path: '/crm/customer', bgColor: '#fdf6ec', color: '#e6a23c' },
+  { title: t('dashboard.goodsManage'), icon: 'Goods', path: '/product/goods', bgColor: '#fef0f0', color: '#f56c6c' },
+  { title: t('dashboard.approvalCenter'), icon: 'Finished', path: '/oa/approval', bgColor: '#f4f4f5', color: '#909399' },
+  { title: t('dashboard.inventoryQuery'), icon: 'Box', path: '/inventory/query', bgColor: '#f9f0ff', color: '#b37feb' }
+])
 
 function handleTodo(todo) {
   router.push(todo.path || '/')
