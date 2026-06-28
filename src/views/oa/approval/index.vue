@@ -1,38 +1,53 @@
 <template>
   <div class="page-container">
     <el-tabs v-model="activeTab" class="approval-tabs">
-      <el-tab-pane label="待审批" name="pending" />
-      <el-tab-pane label="已审批" name="approved" />
-      <el-tab-pane label="我发起的" name="mine" />
+      <el-tab-pane :label="$t('oa.approvalTabsPending')" name="pending" />
+      <el-tab-pane :label="$t('oa.approvalTabsApproved')" name="approved" />
+      <el-tab-pane :label="$t('oa.approvalTabsMine')" name="mine" />
     </el-tabs>
     <BaseSearch :search-items="searchItems" @search="handleSearch" @reset="handleReset" />
     <div class="table-toolbar">
       <div class="toolbar-left"><el-button :icon="Refresh" circle @click="loadData" /></div>
     </div>
     <BaseTable :columns="columns" :table-data="tableData" :loading="loading" :total="total" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :show-index="true" @current-change="handlePageChange" @size-change="handleSizeChange">
-      <template #type="{ row }"><el-tag size="small">{{ typeMap[row.type] || row.type }}</el-tag></template>
-      <template #status="{ row }"><BaseStatusTag :type="row.status === 1 ? 'success' : row.status === 0 ? 'warning' : 'danger'">{{ ['待审批','已通过','已拒绝'][row.status] || '未知' }}</BaseStatusTag></template>
+      <template #type="{ row }"><el-tag size="small">{{ typeLabelMap[row.type] || row.type }}</el-tag></template>
+      <template #status="{ row }"><BaseStatusTag :type="row.status === 1 ? 'success' : row.status === 0 ? 'warning' : 'danger'">{{ statusLabelList[row.status] || $t('common.normal') }}</BaseStatusTag></template>
       <template #operation="{ row }">
-        <el-button type="primary" link size="small" @click="handleView(row)">查看</el-button>
-        <el-button v-if="activeTab === 'pending'" type="success" link size="small" @click="handleApprove(row, 1)">通过</el-button>
-        <el-button v-if="activeTab === 'pending'" type="danger" link size="small" @click="handleApprove(row, 2)">拒绝</el-button>
+        <el-button type="primary" link size="small" @click="handleView(row)">{{ $t('common.detail') }}</el-button>
+        <el-button v-if="activeTab === 'pending'" type="success" link size="small" @click="handleApprove(row, 1)">{{ $t('oa.approve') }}</el-button>
+        <el-button v-if="activeTab === 'pending'" type="danger" link size="small" @click="handleApprove(row, 2)">{{ $t('oa.reject') }}</el-button>
       </template>
     </BaseTable>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Refresh } from '@element-plus/icons-vue'
 import BaseSearch from '@/components/BaseSearch.vue'
 import BaseTable from '@/components/BaseTable.vue'
 import BaseStatusTag from '@/components/BaseStatusTag.vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const activeTab = ref('pending')
-const typeMap = { leave: '请假', expense: '报销', purchase: '采购申请' }
-const searchItems = [ { prop: 'title', label: '标题', type: 'input' }, { prop: 'applicant', label: '申请人', type: 'input' }, { prop: 'type', label: '类型', type: 'select', options: Object.entries(typeMap).map(([v, l]) => ({ value: v, label: l })) } ]
-const columns = [ { prop: 'title', label: '标题', minWidth: 180 }, { prop: 'type', label: '类型', width: 100, slot: 'type' }, { prop: 'applicant', label: '申请人', width: 110 }, { prop: 'dept', label: '部门', width: 120 }, { prop: 'applyTime', label: '申请时间', width: 170 }, { prop: 'status', label: '状态', width: 90, slot: 'status' } ]
+
+const typeLabelMap = computed(() => ({ leave: t('oa.approvalTypeMap.leave'), expense: t('oa.approvalTypeMap.expense'), purchase: t('oa.approvalTypeMap.purchase') }))
+const statusLabelList = computed(() => [t('oa.approvalTabsPending'), t('oa.approveSuccess'), t('oa.rejectSuccess')])
+const searchItems = computed(() => [
+  { prop: 'title', label: t('oa.inputTitle'), type: 'input' },
+  { prop: 'applicant', label: t('oa.applicant'), type: 'input' },
+  { prop: 'type', label: t('oa.type'), type: 'select', options: Object.entries(typeLabelMap.value).map(([v, l]) => ({ value: v, label: l })) }
+])
+const columns = computed(() => [
+  { prop: 'title', label: t('oa.inputTitle'), minWidth: 180 },
+  { prop: 'type', label: t('oa.type'), width: 100, slot: 'type' },
+  { prop: 'applicant', label: t('oa.applicant'), width: 110 },
+  { prop: 'dept', label: t('oa.department'), width: 120 },
+  { prop: 'applyTime', label: t('oa.applyTime'), width: 170 },
+  { prop: 'status', label: t('common.status'), width: 90, slot: 'status' }
+])
 
 const loading = ref(false), tableData = ref([]), total = ref(0)
 const queryParams = reactive({ pageNum: 1, pageSize: 10, title: '', applicant: '', type: '' })
@@ -46,13 +61,13 @@ async function loadData() {
 }
 function handleSearch(p) { Object.assign(queryParams, p, { pageNum: 1 }); loadData() }
 function handleReset() { Object.keys(queryParams).forEach(k => { if (k !== 'pageNum' && k !== 'pageSize') queryParams[k] = '' }); loadData() }
-function handlePageChange(p) { queryParams.pageNum = p; loadData() }; function handleSizeChange(s) { queryParams.pageSize = s; queryParams.pageNum = 1; loadData() }
-
-function handleView(row) { ElMessage.info(`查看: ${row.title}`) }
+function handlePageChange(p) { queryParams.pageNum = p; loadData() }
+function handleSizeChange(s) { queryParams.pageSize = s; queryParams.pageNum = 1; loadData() }
+function handleView(row) { ElMessage.info(`${t('common.detail')}: ${row.title}`) }
 async function handleApprove(row, status) {
-  const action = status === 1 ? '通过' : '拒绝'
-  await ElMessageBox.confirm(`确定${action}该申请吗？`, '提示', { type: 'warning' })
-  ElMessage.success(`${action}成功`); loadData()
+  const action = status === 1 ? t('oa.approve') : t('oa.reject')
+  await ElMessageBox.confirm(t('oa.approveRejectAction', { action }), t('header.tips'), { type: 'warning' })
+  ElMessage.success(t(status === 1 ? 'oa.approveSuccess' : 'oa.rejectSuccess')); loadData()
 }
 onMounted(() => loadData())
 </script>

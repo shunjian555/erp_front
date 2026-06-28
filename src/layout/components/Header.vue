@@ -22,11 +22,11 @@
       </el-tooltip> -->
 
       <!-- 语言切换 -->
-      <!-- <el-tooltip :content="t('header.language')" placement="bottom" :show-after="300">
+      <el-tooltip :content="t('header.language')" placement="bottom" :show-after="300">
         <div class="navbar-action lang-switch" @click="toggleLanguage">
           <span class="lang-text">{{ isEn ? '中' : 'EN' }}</span>
         </div>
-      </el-tooltip> -->
+      </el-tooltip>
 
       <!-- 全屏切换 -->
       <el-tooltip :content="t('header.fullscreen')" placement="bottom" :show-after="300">

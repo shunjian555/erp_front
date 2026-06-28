@@ -132,7 +132,7 @@ export default [
     method: 'get',
     response: () => ({ code: 200, data: {
       list: ['华为','苹果','小米','联想','戴尔','得力','晨光','三只松鼠'].map((n, i) => ({
-        id: i + 1, brandName: n, brandLogo: '', description: '',
+        id: i + 1, name: n, logo: '', description: `${n}是全球知名的科技/消费品牌，产品涵盖手机、电脑、智能家居等多个领域`, sort: i + 1,
         status: 1, createTime: '2024-01-01 00:00:00'
       })),
       total: 8

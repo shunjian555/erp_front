@@ -15,7 +15,7 @@
     </template>
     <el-dropdown v-if="hiddenItems.length" trigger="click" @command="handleCommand">
       <el-button type="primary" link size="small">
-        更多<el-icon class="el-icon--right"><ArrowDown /></el-icon>
+        {{ t('common.moreActions') }}<el-icon class="el-icon--right"><ArrowDown /></el-icon>
       </el-button>
       <template #dropdown>
         <el-dropdown-menu>
@@ -37,6 +37,9 @@
 <script setup>
 import { computed } from 'vue'
 import { ArrowDown } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   /**
@@ -46,10 +49,10 @@ const props = defineProps({
    */
   items: { type: Array, default: () => [] },
   /**
-   * 超过该数量则折叠到更多下拉
-   * 默认 3
+   * 超过该数量则折叠到更多下拉（更多按钮本身也算1个）
+   * 默认 2，即：2个按钮 + 更多 = 最多3个
    */
-  max: { type: Number, default: 3 }
+  max: { type: Number, default: 2 }
 })
 
 const importantItems = computed(() => props.items.filter((i) => i.important && !i.hidden))

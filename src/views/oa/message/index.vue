@@ -1,9 +1,8 @@
 <template>
   <div class="page-container">
     <el-row :gutter="16">
-      <!-- 消息列表 -->
       <el-col :span="16">
-        <BaseCard title="消息列表" shadow="hover">
+        <BaseCard :title="$t('oa.messageList')" shadow="hover">
           <div class="message-list">
             <div v-for="msg in messageList" :key="msg.id" class="message-item" :class="{ unread: !msg.isRead }" @click="handleRead(msg)">
               <div class="msg-avatar">
@@ -18,28 +17,27 @@
               </div>
               <div v-if="!msg.isRead" class="msg-unread-dot"></div>
             </div>
-            <el-empty v-if="!messageList.length" description="暂无消息" :image-size="80" />
+            <el-empty v-if="!messageList.length" :description="$t('oa.noMessages')" :image-size="80" />
           </div>
           <div class="pagination-wrapper">
             <el-pagination small layout="prev, pager, next" :total="50" :page-size="10" />
           </div>
         </BaseCard>
       </el-col>
-      <!-- 操作面板 -->
       <el-col :span="8">
-        <BaseCard title="快捷操作" shadow="hover">
+        <BaseCard :title="$t('oa.quickActions')" shadow="hover">
           <div class="quick-actions">
             <div class="action-btn" @click="markAllRead">
               <el-icon :size="20" color="#409eff"><Finished /></el-icon>
-              <span>全部标为已读</span>
+              <span>{{ $t('oa.markAllRead') }}</span>
             </div>
             <div class="action-btn" @click="clearAll">
               <el-icon :size="20" color="#f56c6c"><Delete /></el-icon>
-              <span>清空消息</span>
+              <span>{{ $t('oa.clearAll') }}</span>
             </div>
           </div>
         </BaseCard>
-        <BaseCard title="系统通知" shadow="hover" style="margin-top: 16px;">
+        <BaseCard :title="$t('oa.systemNotices')" shadow="hover" style="margin-top: 16px;">
           <div class="system-notices">
             <div v-for="(item, index) in systemNotices" :key="index" class="notice-item">
               <el-icon :color="item.color"><component :is="item.icon" /></el-icon>
@@ -57,6 +55,9 @@ import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Finished, Delete } from '@element-plus/icons-vue'
 import BaseCard from '@/components/BaseCard.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const messageList = ref([
   { id: 1, sender: '系统', title: '系统升级通知', summary: '系统将于今晚22:00进行维护升级，届时将暂停服务约30分钟。', time: '10分钟前', isRead: false, color: '#409eff' },
@@ -72,33 +73,15 @@ const systemNotices = ref([
   { icon: 'Document', text: '本月合同即将到期5份', color: '#409eff' }
 ])
 
-function handleRead(msg) {
-  msg.isRead = true
-  ElMessage.info(`阅读: ${msg.title}`)
-}
-
-function markAllRead() {
-  messageList.value.forEach((m) => (m.isRead = true))
-  ElMessage.success('已全部标为已读')
-}
-
-function clearAll() {
-  messageList.value = []
-  ElMessage.success('消息已清空')
-}
+function handleRead(msg) { msg.isRead = true; ElMessage.info(`${t('common.detail')}: ${msg.title}`) }
+function markAllRead() { messageList.value.forEach((m) => (m.isRead = true)); ElMessage.success(t('oa.markAllReadSuccess')) }
+function clearAll() { messageList.value = []; ElMessage.success(t('oa.messagesCleared')) }
 </script>
 
 <style lang="scss" scoped>
 .message-list {
-  max-height: 520px;
-  overflow-y: auto;
-  .message-item {
-    display: flex;
-    padding: 14px 12px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--border-color-lighter);
-    transition: background-color 0.2s;
-    position: relative;
+  max-height: 520px; overflow-y: auto;
+  .message-item { display: flex; padding: 14px 12px; cursor: pointer; border-bottom: 1px solid var(--border-color-lighter); transition: background-color 0.2s; position: relative;
     &:hover { background-color: #f5f7fa; }
     &.unread { background-color: #ecf5ff; }
     .msg-avatar { margin-right: 12px; flex-shrink: 0; }

@@ -2,68 +2,67 @@
   <div class="page-container">
     <BaseSearch :search-items="searchItems" @search="handleSearch" @reset="handleReset" />
     <div class="table-toolbar">
-      <div class="toolbar-left"><el-button type="primary" :icon="Plus" @click="handleAdd">发布公告</el-button><el-button :icon="Delete" plain @click="handleBatchDelete">批量删除</el-button></div>
+      <div class="toolbar-left"><el-button type="primary" :icon="Plus" @click="handleAdd">{{ $t('oa.publishNotice') }}</el-button><el-button :icon="Delete" plain @click="handleBatchDelete">{{ $t('common.delete') }}</el-button></div>
       <div class="toolbar-right"><el-button :icon="Refresh" circle @click="loadData" /></div>
     </div>
     <BaseTable :columns="columns" :table-data="tableData" :loading="loading" :total="total" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :show-selection="true" :show-index="true" @selection-change="handleSelectionChange" @current-change="handlePageChange" @size-change="handleSizeChange">
-      <template #top="{ row }"><el-tag v-if="row.isTop" type="danger" size="small">置顶</el-tag></template>
-      <template #operation="{ row }"><el-button type="primary" link size="small" @click="handleEdit(row)">编辑</el-button><el-button type="danger" link size="small" @click="handleDelete(row)">删除</el-button></template>
+      <template #top="{ row }"><el-tag v-if="row.isTop" type="danger" size="small">{{ $t('oa.isTop') }}</el-tag></template>
+      <template #operation="{ row }"><el-button type="primary" link size="small" @click="handleEdit(row)">{{ $t('common.edit') }}</el-button><el-button type="danger" link size="small" @click="handleDelete(row)">{{ $t('common.delete') }}</el-button></template>
     </BaseTable>
 
-    <!-- 新增/编辑弹窗 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="800px" :close-on-click-modal="false" @close="cancelDialog">
       <el-form ref="formRef" :model="formData" :rules="formRules" label-width="80px">
-        <el-form-item label="标题" prop="title">
-          <el-input v-model="formData.title" placeholder="请输入公告标题" />
+        <el-form-item :label="$t('oa.noticeTitle')" prop="title">
+          <el-input v-model="formData.title" :placeholder="$t('oa.inputNoticeTitle')" />
         </el-form-item>
-        <el-form-item label="类型" prop="type">
-          <el-select v-model="formData.type" placeholder="请选择类型" style="width: 100%">
+        <el-form-item :label="$t('oa.type')" prop="type">
+          <el-select v-model="formData.type" :placeholder="$t('oa.selectType')" style="width: 100%">
             <el-option v-for="opt in typeOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="内容" prop="content">
-          <RichEditor v-model="formData.content" placeholder="请输入公告内容" />
+        <el-form-item :label="$t('oa.content')" prop="content">
+          <RichEditor v-model="formData.content" :placeholder="$t('oa.inputNoticeContent')" />
         </el-form-item>
-        <el-form-item label="置顶" prop="isTop">
-          <el-switch v-model="formData.isTop" active-text="是" inactive-text="否" />
+        <el-form-item :label="$t('oa.isTop')" prop="isTop">
+          <el-switch v-model="formData.isTop" :active-text="$t('oa.yes')" :inactive-text="$t('oa.no')" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="cancelDialog">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
+        <el-button @click="cancelDialog">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Delete, Refresh } from '@element-plus/icons-vue'
 import BaseSearch from '@/components/BaseSearch.vue'
 import BaseTable from '@/components/BaseTable.vue'
 import RichEditor from '@/components/RichEditor.vue'
+import { useI18n } from 'vue-i18n'
 
-const typeOptions = [{ value: 'notice', label: '通知' }, { value: 'policy', label: '制度' }, { value: 'activity', label: '活动' }]
+const { t } = useI18n()
 
-const searchItems = [
-  { prop: 'title', label: '公告标题', type: 'input' },
-  { prop: 'type', label: '类型', type: 'select', options: typeOptions }
-]
-
-const columns = [
-  { prop: 'title', label: '公告标题', minWidth: 200 },
-  { prop: 'type', label: '类型', width: 90 },
-  { prop: 'publisher', label: '发布人', width: 100 },
-  { prop: 'isTop', label: '置顶', width: 70, slot: 'top' },
-  { prop: 'readCount', label: '阅读量', width: 80, align: 'center' },
-  { prop: 'publishTime', label: '发布时间', width: 170 }
-]
-
-const formRules = {
-  title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
-  content: [{ required: true, message: '请输入内容', trigger: 'blur' }]
-}
+const typeOptions = computed(() => [{ value: 'notice', label: t('oa.typeNotice') }, { value: 'policy', label: t('oa.typePolicy') }, { value: 'activity', label: t('oa.typeActivity') }])
+const searchItems = computed(() => [
+  { prop: 'title', label: t('oa.noticeTitle'), type: 'input' },
+  { prop: 'type', label: t('oa.type'), type: 'select', options: typeOptions.value }
+])
+const columns = computed(() => [
+  { prop: 'title', label: t('oa.noticeTitle'), minWidth: 200 },
+  { prop: 'type', label: t('oa.type'), width: 90 },
+  { prop: 'publisher', label: t('oa.publisher'), width: 100 },
+  { prop: 'isTop', label: t('oa.isTop'), width: 70, slot: 'top' },
+  { prop: 'readCount', label: t('oa.readCount'), width: 80, align: 'center' },
+  { prop: 'publishTime', label: t('oa.publishTime'), width: 170 }
+])
+const formRules = computed(() => ({
+  title: [{ required: true, message: t('oa.inputTitle'), trigger: 'blur' }],
+  content: [{ required: true, message: t('oa.inputContent'), trigger: 'blur' }]
+}))
 
 const loading = ref(false), tableData = ref([]), total = ref(0), selectedRows = ref([])
 const dialogVisible = ref(false), dialogTitle = ref(''), submitLoading = ref(false), formRef = ref(null)
@@ -84,67 +83,22 @@ function handleReset() { Object.keys(queryParams).forEach(k => { if (k !== 'page
 function handlePageChange(p) { queryParams.pageNum = p; loadData() }
 function handleSizeChange(s) { queryParams.pageSize = s; queryParams.pageNum = 1; loadData() }
 function handleSelectionChange(r) { selectedRows.value = r }
-
-function handleAdd() {
-  dialogTitle.value = '发布公告'
-  Object.keys(formData).forEach(k => formData[k] = '')
-  formData.id = undefined
-  dialogVisible.value = true
-}
-
-function handleEdit(r) {
-  dialogTitle.value = '编辑公告'
-  Object.assign(formData, r)
-  dialogVisible.value = true
-}
-
-function cancelDialog() {
-  dialogVisible.value = false
-  formRef.value?.resetFields()
-}
-
+function handleAdd() { dialogTitle.value = t('oa.publishNotice'); Object.keys(formData).forEach(k => formData[k] = ''); formData.id = undefined; dialogVisible.value = true }
+function handleEdit(r) { dialogTitle.value = t('oa.editNotice'); Object.assign(formData, r); dialogVisible.value = true }
+function cancelDialog() { dialogVisible.value = false; formRef.value?.resetFields() }
 async function handleSubmit() {
   const valid = await formRef.value?.validate().catch(() => false)
   if (!valid) return
   submitLoading.value = true
-  try {
-    await new Promise(r => setTimeout(r, 500))
-    ElMessage.success('操作成功')
-    dialogVisible.value = false
-    loadData()
-  } catch { ElMessage.error('操作失败') }
-  finally { submitLoading.value = false }
+  try { await new Promise(r => setTimeout(r, 500)); ElMessage.success(t('oa.operationSuccess')); dialogVisible.value = false; loadData() } catch { ElMessage.error(t('oa.operationFailed')) } finally { submitLoading.value = false }
 }
-
-async function handleDelete(row) {
-  await ElMessageBox.confirm('确定删除?', '提示', { type: 'warning' })
-  ElMessage.success('删除成功')
-  loadData()
-}
-
-async function handleBatchDelete() {
-  if (!selectedRows.value.length) return ElMessage.warning('请选择数据')
-  await ElMessageBox.confirm('确定?', '提示', { type: 'warning' })
-  ElMessage.success('删除成功')
-  loadData()
-}
-
+async function handleDelete(row) { await ElMessageBox.confirm(t('oa.confirmDelete'), t('header.tips'), { type: 'warning' }); ElMessage.success(t('oa.deleteSuccess')); loadData() }
+async function handleBatchDelete() { if (!selectedRows.value.length) return ElMessage.warning(t('oa.selectData')); await ElMessageBox.confirm(t('oa.batchDeleteConfirm'), t('header.tips'), { type: 'warning' }); ElMessage.success(t('oa.deleteSuccess')); loadData() }
 onMounted(() => loadData())
 </script>
 
 <style lang="scss" scoped>
 .page-container {
-  .table-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding: 14px 18px;
-    background: #fff;
-    border-radius: var(--border-radius-base);
-
-    .toolbar-left { display: flex; gap: 10px; }
-    .toolbar-right { display: flex; gap: 8px; }
-  }
+  .table-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 14px 18px; background: #fff; border-radius: var(--border-radius-base); .toolbar-left { display: flex; gap: 10px; } .toolbar-right { display: flex; gap: 8px; } }
 }
 </style>
