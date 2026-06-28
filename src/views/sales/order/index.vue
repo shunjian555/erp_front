@@ -2,51 +2,84 @@
   <div class="page-container">
     <BaseSearch :search-items="searchItems" @search="handleSearch" @reset="handleReset" />
     <div class="table-toolbar">
-      <div class="toolbar-left"><el-button type="primary" :icon="Plus" @click="handleAdd">新增订单</el-button><el-button :icon="Download" plain>导出</el-button></div>
+      <div class="toolbar-left"><el-button type="primary" :icon="Plus" @click="handleAdd">{{ t('sales.addOrder') }}</el-button><el-button :icon="Download" plain>{{ t('common.export') }}</el-button></div>
       <div class="toolbar-right"><el-button :icon="Refresh" circle @click="loadData" /></div>
     </div>
     <BaseTable :columns="columns" :table-data="tableData" :loading="loading" :total="total" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :show-selection="true" :show-index="true" @selection-change="handleSelectionChange" @current-change="handlePageChange" @size-change="handleSizeChange">
       <template #totalAmount="{ row }">{{ formatMoney(row.totalAmount) }}</template>
-      <template #status="{ row }"><el-tag :type="salesStatusMap[row.status]?.type || 'info'" size="small">{{ salesStatusMap[row.status]?.label || '未知' }}</el-tag></template>
-      <template #operation="{ row }"><el-button type="primary" link size="small" @click="handleView(row)">查看</el-button><el-button type="primary" link size="small" @click="handleEdit(row)">编辑</el-button><el-button type="danger" link size="small" @click="handleDelete(row)">删除</el-button></template>
+      <template #status="{ row }"><el-tag :type="salesStatusMap[row.status]?.type || 'info'" size="small">{{ salesStatusMap[row.status]?.label || t('sales.unknown') }}</el-tag></template>
+      <template #operation="{ row }"><el-button type="primary" link size="small" @click="handleView(row)">{{ t('common.detail') }}</el-button><el-button type="primary" link size="small" @click="handleEdit(row)">{{ t('common.edit') }}</el-button><el-button type="danger" link size="small" @click="handleDelete(row)">{{ t('common.delete') }}</el-button></template>
     </BaseTable>
     <BaseDialog v-model="dialogVisible" :title="dialogTitle" width="700px" :confirm-loading="submitLoading" @confirm="handleSubmit" @cancel="cancelDialog"><BaseForm ref="formRef" v-model="formData" :form-items="formItems" :form-rules="formRules" :col-count="2" /></BaseDialog>
 
-    <!-- 详情 -->
-    <el-dialog v-model="viewVisible" title="订单详情" width="640px" :close-on-click-modal="false">
+    <!-- Detail -->
+    <el-dialog v-model="viewVisible" :title="t('sales.orderDetail')" width="640px" :close-on-click-modal="false">
       <el-descriptions v-if="viewRow" :column="2" border>
-        <el-descriptions-item label="订单编号">{{ viewRow.orderNo }}</el-descriptions-item>
-        <el-descriptions-item label="状态"><el-tag :type="salesStatusMap[viewRow.status]?.type || 'info'" size="small">{{ salesStatusMap[viewRow.status]?.label || '未知' }}</el-tag></el-descriptions-item>
-        <el-descriptions-item label="客户名称">{{ viewRow.customerName }}</el-descriptions-item>
-        <el-descriptions-item label="商品数量">{{ viewRow.quantity }}</el-descriptions-item>
-        <el-descriptions-item label="订单金额">{{ formatMoney(viewRow.totalAmount) }}</el-descriptions-item>
-        <el-descriptions-item label="交货日期">{{ viewRow.deliveryDate }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间" :span="2">{{ viewRow.createTime }}</el-descriptions-item>
+        <el-descriptions-item :label="t('sales.detailOrderNo')">{{ viewRow.orderNo }}</el-descriptions-item>
+        <el-descriptions-item :label="t('sales.detailStatus')"><el-tag :type="salesStatusMap[viewRow.status]?.type || 'info'" size="small">{{ salesStatusMap[viewRow.status]?.label || t('sales.unknown') }}</el-tag></el-descriptions-item>
+        <el-descriptions-item :label="t('sales.detailCustomerName')">{{ viewRow.customerName }}</el-descriptions-item>
+        <el-descriptions-item :label="t('sales.detailQuantity')">{{ viewRow.quantity }}</el-descriptions-item>
+        <el-descriptions-item :label="t('sales.detailOrderAmount')">{{ formatMoney(viewRow.totalAmount) }}</el-descriptions-item>
+        <el-descriptions-item :label="t('sales.detailDeliveryDate')">{{ viewRow.deliveryDate }}</el-descriptions-item>
+        <el-descriptions-item :label="t('sales.detailCreateTime')" :span="2">{{ viewRow.createTime }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Download, Refresh } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
 import BaseSearch from '@/components/BaseSearch.vue'
 import BaseTable from '@/components/BaseTable.vue'
 import BaseDialog from '@/components/BaseDialog.vue'
 import BaseForm from '@/components/BaseForm.vue'
 import request from '@/utils/request'
 
+const { t, locale } = useI18n()
+
 function formatMoney(v) {
   if (v === null || v === undefined || v === '') return '0.00'
-  return Number(v).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return Number(v).toLocaleString(locale.value === 'zh-CN' ? 'zh-CN' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
-const salesStatusMap = { 0: { label: '待确认', type: 'info' }, 1: { label: '已确认', type: 'primary' }, 2: { label: '部分发货', type: 'warning' }, 3: { label: '已发货', type: 'success' }, 4: { label: '已完成', type: 'success' } }
-const searchItems = [ { prop: 'orderNo', label: '订单编号', type: 'input' }, { prop: 'customerName', label: '客户名称', type: 'input' }, { prop: 'status', label: '状态', type: 'select', options: Object.entries(salesStatusMap).map(([v, l]) => ({ value: Number(v), label: l.label })) } ]
-const columns = [ { prop: 'orderNo', label: '订单编号', width: 190 }, { prop: 'customerName', label: '客户', width: 130 }, { prop: 'totalAmount', label: '金额', width: 130, slot: 'totalAmount', align: 'right' }, { prop: 'quantity', label: '数量', width: 80, align: 'center' }, { prop: 'status', label: '状态', width: 100, slot: 'status' }, { prop: 'createTime', label: '创建时间', width: 170 } ]
-const formItems = [ { prop: 'orderNo', label: '订单编号', type: 'input', span: 12 }, { prop: 'customerName', label: '客户', type: 'input', span: 12 }, { prop: 'totalAmount', label: '总金额', type: 'number', precision: 2, span: 12 }, { prop: 'deliveryDate', label: '交货日期', type: 'date', span: 12 }, { prop: 'remark', label: '备注', type: 'textarea', rows: 3, span: 24 } ]
-const formRules = { orderNo: [{ required: true, message: '请输入订单编号', trigger: 'blur' }], customerName: [{ required: true, message: '请选择客户', trigger: 'blur' }] }
+const salesStatusMap = computed(() => ({
+  0: { label: t('sales.statusPending'), type: 'info' },
+  1: { label: t('sales.statusConfirmed'), type: 'primary' },
+  2: { label: t('sales.statusPartialShip'), type: 'warning' },
+  3: { label: t('sales.statusShippedOrder'), type: 'success' },
+  4: { label: t('sales.statusDone'), type: 'success' }
+}))
+
+const searchItems = computed(() => [
+  { prop: 'orderNo', label: t('sales.orderNo'), type: 'input' },
+  { prop: 'customerName', label: t('sales.customerName'), type: 'input' },
+  { prop: 'status', label: t('sales.detailStatus'), type: 'select', options: Object.entries(salesStatusMap.value).map(([v, l]) => ({ value: Number(v), label: l.label })) }
+])
+
+const columns = computed(() => [
+  { prop: 'orderNo', label: t('sales.orderNo'), width: 190 },
+  { prop: 'customerName', label: t('sales.customer'), width: 130 },
+  { prop: 'totalAmount', label: t('sales.amount'), width: 130, slot: 'totalAmount', align: 'right' },
+  { prop: 'quantity', label: t('sales.quantity'), width: 80, align: 'center' },
+  { prop: 'status', label: t('sales.detailStatus'), width: 100, slot: 'status' },
+  { prop: 'createTime', label: t('sales.detailCreateTime'), width: 170 }
+])
+
+const formItems = computed(() => [
+  { prop: 'orderNo', label: t('sales.orderNo'), type: 'input', span: 12 },
+  { prop: 'customerName', label: t('sales.customer'), type: 'input', span: 12 },
+  { prop: 'totalAmount', label: t('sales.totalAmount'), type: 'number', precision: 2, span: 12 },
+  { prop: 'deliveryDate', label: t('sales.deliveryDate'), type: 'date', span: 12 },
+  { prop: 'remark', label: t('common.remark'), type: 'textarea', rows: 3, span: 24 }
+])
+
+const formRules = computed(() => ({
+  orderNo: [{ required: true, message: t('sales.validateOrderNo'), trigger: 'blur' }],
+  customerName: [{ required: true, message: t('sales.validateSelectCustomer'), trigger: 'blur' }]
+}))
 
 const loading = ref(false), tableData = ref([]), total = ref(0), selectedRows = ref([])
 const dialogVisible = ref(false), dialogTitle = ref(''), submitLoading = ref(false), formRef = ref(null)
@@ -59,12 +92,12 @@ function handleSearch(p) { Object.assign(queryParams, p, { pageNum: 1 }); loadDa
 function handleReset() { Object.keys(queryParams).forEach(k => { if (k !== 'pageNum' && k !== 'pageSize') queryParams[k] = '' }); loadData() }
 function handlePageChange(p) { queryParams.pageNum = p; loadData() }; function handleSizeChange(s) { queryParams.pageSize = s; queryParams.pageNum = 1; loadData() }
 function handleSelectionChange(r) { selectedRows.value = r }
-function handleAdd() { dialogTitle.value = '新增销售订单'; Object.keys(formData).forEach(k => formData[k] = ''); formData.id = undefined; dialogVisible.value = true }
+function handleAdd() { dialogTitle.value = t('sales.addSalesOrder'); Object.keys(formData).forEach(k => formData[k] = ''); formData.id = undefined; dialogVisible.value = true }
 function handleView(r) { viewRow.value = r; viewVisible.value = true }
-function handleEdit(r) { dialogTitle.value = '编辑销售订单'; Object.assign(formData, r); dialogVisible.value = true }
+function handleEdit(r) { dialogTitle.value = t('sales.editSalesOrder'); Object.assign(formData, r); dialogVisible.value = true }
 function cancelDialog() { dialogVisible.value = false; formRef.value?.resetFields() }
-async function handleSubmit() { const valid = await formRef.value?.validate().catch(() => false); if (!valid) return; submitLoading.value = true; try { await new Promise(r => setTimeout(r, 500)); ElMessage.success('操作成功'); dialogVisible.value = false; loadData() } catch { ElMessage.error('操作失败') } finally { submitLoading.value = false } }
-async function handleDelete(row) { await ElMessageBox.confirm('确定删除?', '提示', { type: 'warning' }); ElMessage.success('删除成功'); loadData() }
+async function handleSubmit() { const valid = await formRef.value?.validate().catch(() => false); if (!valid) return; submitLoading.value = true; try { await new Promise(r => setTimeout(r, 500)); ElMessage.success(t('common.success')); dialogVisible.value = false; loadData() } catch { ElMessage.error(t('common.failed')) } finally { submitLoading.value = false } }
+async function handleDelete(row) { await ElMessageBox.confirm(t('common.confirmDelete'), t('common.hint'), { type: 'warning' }); ElMessage.success(t('common.deleteSuccess')); loadData() }
 onMounted(() => loadData())
 </script>
 

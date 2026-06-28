@@ -10,11 +10,11 @@
       <div class="toolbar-right"><el-button :icon="Refresh" circle @click="loadData" /></div>
     </div>
     <BaseTable :columns="columns" :table-data="tableData" :loading="loading" :total="total" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :show-selection="true" :show-index="true" @selection-change="handleSelectionChange" @current-change="handlePageChange" @size-change="handleSizeChange">
-      <template #level="{ row }"><el-tag :type="levelMap[row.level]?.type || 'info'" size="small">{{ levelMap[row.level]?.label || row.level }}</el-tag></template>
+      <template #level="{ row }"><el-tag :type="levelMap[row.level]?.type || 'info'" size="small">{{ levelLabelMap[row.level] || row.level }}</el-tag></template>
       <template #status="{ row }"><el-tag :type="row.status === 1 ? 'success' : 'danger'" size="small">{{ row.status === 1 ? $t('purchase.supplierStatusNormal') : $t('purchase.supplierStatusDisabled') }}</el-tag></template>
       <template #operation="{ row }">
-        <el-button v-for="action in getActions(row).slice(0, 3)" :key="action.key" :type="action.type" link size="small" @click="action.handler(row)">{{ action.label }}</el-button>
-        <el-dropdown v-if="getActions(row).length > 3" trigger="click" @command="(cmd) => handleCommand(cmd, row)">
+        <el-button v-for="action in getActions(row).slice(0, 2)" :key="action.key" :type="action.type" link size="small" @click="action.handler(row)">{{ action.label }}</el-button>
+        <el-dropdown v-if="getActions(row).length > 2" trigger="click" @command="(cmd) => handleCommand(cmd, row)">
           <el-button type="primary" link size="small">{{ $t('common.moreActions') }}<el-icon class="el-icon--right"><ArrowDown /></el-icon></el-button>
           <template #dropdown>
             <el-dropdown-menu>
@@ -29,7 +29,7 @@
     <el-dialog v-model="viewVisible" :title="$t('purchase.supplierDetail')" width="640px" :close-on-click-modal="false">
       <el-descriptions v-if="viewRow" :column="2" border>
         <el-descriptions-item :label="$t('purchase.supplierName')">{{ viewRow.supplierName }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('purchase.level')"><el-tag :type="levelMap[viewRow.level]?.type || 'info'" size="small">{{ levelMap[viewRow.level]?.label || viewRow.level }}</el-tag></el-descriptions-item>
+        <el-descriptions-item :label="$t('purchase.level')"><el-tag :type="levelMap[viewRow.level]?.type || 'info'" size="small">{{ levelLabelMap[viewRow.level] || viewRow.level }}</el-tag></el-descriptions-item>
         <el-descriptions-item :label="$t('purchase.contactPerson')">{{ viewRow.contactPerson }}</el-descriptions-item>
         <el-descriptions-item :label="$t('purchase.phone')">{{ viewRow.phone }}</el-descriptions-item>
         <el-descriptions-item :label="$t('purchase.email')" :span="2">{{ viewRow.email || '—' }}</el-descriptions-item>
@@ -55,8 +55,9 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
-const levelMap = computed(() => ({ [t('purchase.levelStrategy')]: { label: t('purchase.levelStrategy'), type: 'danger' }, [t('purchase.levelCore')]: { label: t('purchase.levelCore'), type: 'warning' }, [t('purchase.levelNormal')]: { label: t('purchase.levelNormal'), type: 'info' } }))
-const levelOptions = computed(() => [{ value: t('purchase.levelStrategy'), label: t('purchase.levelStrategy') }, { value: t('purchase.levelCore'), label: t('purchase.levelCore') }, { value: t('purchase.levelNormal'), label: t('purchase.levelNormal') }])
+const levelMap = { '战略': { type: 'danger' }, '核心': { type: 'warning' }, '普通': { type: 'info' } }
+const levelLabelMap = computed(() => ({ '战略': t('purchase.levelStrategy'), '核心': t('purchase.levelCore'), '普通': t('purchase.levelNormal') }))
+const levelOptions = computed(() => [{ value: '战略', label: t('purchase.levelStrategy') }, { value: '核心', label: t('purchase.levelCore') }, { value: '普通', label: t('purchase.levelNormal') }])
 const searchItems = computed(() => [ { prop: 'supplierName', label: t('purchase.supplierName'), type: 'input' }, { prop: 'contactPerson', label: t('purchase.contactPerson'), type: 'input' }, { prop: 'phone', label: t('purchase.phone'), type: 'input' }, { prop: 'level', label: t('purchase.level'), type: 'select', options: levelOptions.value } ])
 const columns = computed(() => [ { prop: 'supplierName', label: t('purchase.supplierName'), width: 160 }, { prop: 'contactPerson', label: t('purchase.contactPerson'), width: 110 }, { prop: 'phone', label: t('purchase.phone'), width: 130 }, { prop: 'address', label: t('purchase.address'), minWidth: 200, showOverflowTooltip: true }, { prop: 'level', label: t('purchase.level'), width: 80, slot: 'level' }, { prop: 'status', label: t('purchase.supplierStatus'), width: 80, slot: 'status' }, { prop: 'createTime', label: t('purchase.supplierCreateTime'), width: 170 } ])
 const formItems = computed(() => [ { prop: 'supplierName', label: t('purchase.supplierName'), type: 'input', span: 12 }, { prop: 'contactPerson', label: t('purchase.contactPerson'), type: 'input', span: 12 }, { prop: 'phone', label: t('purchase.phone'), type: 'input', span: 12 }, { prop: 'email', label: t('purchase.email'), type: 'input', span: 12 }, { prop: 'address', label: t('purchase.address'), type: 'textarea', rows: 2, span: 24 }, { prop: 'level', label: t('purchase.level'), type: 'select', span: 12, options: levelOptions.value }, { prop: 'status', label: t('purchase.supplierStatus'), type: 'radio', span: 12, options: [{ value: 1, label: t('purchase.supplierStatusNormal') }, { value: 0, label: t('purchase.supplierStatusDisabled') }] }, { prop: 'remark', label: t('purchase.supplierRemark'), type: 'textarea', rows: 3, span: 24 } ])

@@ -41,7 +41,10 @@ export default {
     startDate: '开始日期',
     endDate: '结束日期',
     expand: '展开',
-    collapse: '收起'
+    collapse: '收起',
+    hint: '提示',
+    deleteSuccess: '删除成功',
+    remark: '备注'
   },
 
   // 菜单
@@ -1058,5 +1061,80 @@ export default {
     notFound: '抱歉，您访问的页面不存在',
     backHome: '返回首页',
     backPrev: '返回上页'
+  },
+
+  // 销售管理
+  sales: {
+    // 客户
+    customerName: '客户名称',
+    contactName: '联系人',
+    phone: '电话',
+    email: '邮箱',
+    address: '地址',
+    level: '等级',
+    levelA: 'A级',
+    levelB: 'B级',
+    levelC: 'C级',
+    addCustomer: '新增客户',
+    editCustomer: '编辑客户',
+    customerDetail: '客户详情',
+    // 订单
+    orderNo: '订单编号',
+    quantity: '数量',
+    amount: '金额',
+    totalAmount: '总金额',
+    deliveryDate: '交货日期',
+    customer: '客户',
+    addOrder: '新增订单',
+    editOrder: '编辑订单',
+    addSalesOrder: '新增销售订单',
+    editSalesOrder: '编辑销售订单',
+    orderDetail: '订单详情',
+    // 出库
+    outboundNo: '出库单号',
+    orderNoLabel: '关联订单',
+    outboundDate: '出库日期',
+    statusShipped: '已出库',
+    statusPendingShip: '待出库',
+    addOutbound: '新增出库单',
+    outboundDetail: '出库单详情',
+    // 退货
+    returnNo: '退货单号',
+    reason: '退货原因',
+    returnAmount: '退货金额',
+    statusCompleted: '已完成',
+    statusProcessing: '处理中',
+    addReturn: '新增退货单',
+    returnDetail: '退货单详情',
+    // 状态
+    statusPending: '待确认',
+    statusConfirmed: '已确认',
+    statusPartialShip: '部分发货',
+    statusShippedOrder: '已发货',
+    statusDone: '已完成',
+    // 详情标签
+    detailOrderNo: '订单编号',
+    detailStatus: '状态',
+    detailCustomerName: '客户名称',
+    detailQuantity: '商品数量',
+    detailOrderAmount: '订单金额',
+    detailDeliveryDate: '交货日期',
+    detailCreateTime: '创建时间',
+    detailOutboundNo: '出库单号',
+    detailRelatedOrder: '关联订单',
+    detailCustomer: '客户',
+    detailOutboundDate: '出库日期',
+    detailReturnNo: '退货单号',
+    detailRelatedOrderNo: '关联订单',
+    detailReturnAmount: '退货金额',
+    detailReturnReason: '退货原因',
+    // 表单校验
+    validateCustomerName: '请输入客户名称',
+    validatePhone: '请输入电话',
+    validateOrderNo: '请输入订单编号',
+    validateSelectCustomer: '请选择客户',
+    validateOutboundNo: '请输入出库单号',
+    validateReturnNo: '请输入退货单号',
+    unknown: '未知'
   }
 }
