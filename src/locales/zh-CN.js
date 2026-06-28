@@ -49,6 +49,9 @@ export default {
 
   // 菜单
   menu: {
+    login: '登录',
+    home: '首页',
+    profile: '个人中心',
     dashboard: '工作台',
     crm: 'CRM',
     crmCustomer: '客户管理',
@@ -163,7 +166,25 @@ export default {
     systemWorkflowDesigner: '工作流设计器',
     systemDataImport: '数据导入导出',
     systemApiGateway: 'API 网关',
-    systemMonitor: '系统监控'
+    systemMonitor: '系统监控',
+    hr: '人力资源',
+    hrEmployee: '员工档案',
+    hrOrganization: '组织架构',
+    hrRecruitPosition: '招聘职位',
+    hrRecruitResume: '简历管理',
+    hrRecruitInterview: '面试管理',
+    hrTrainingCourse: '培训课程',
+    hrTrainingPlan: '培训计划',
+    hrTrainingRecord: '培训记录',
+    hrAttendanceClock: '打卡记录',
+    hrAttendanceSchedule: '排班管理',
+    hrAttendanceStatistics: '考勤统计',
+    hrPerformanceKpi: 'KPI设置',
+    hrPerformanceAssessment: '绩效考核',
+    hrPerformanceScore: '评分管理',
+    hrSalaryCalculation: '工资计算',
+    hrSalaryTax: '个税管理',
+    hrInsurance: '社保公积金'
   },
 
   // 登录页

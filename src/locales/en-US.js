@@ -49,6 +49,9 @@ export default {
 
   // Menu
   menu: {
+    login: 'Login',
+    home: 'Home',
+    profile: 'Profile',
     dashboard: 'Dashboard',
     crm: 'CRM',
     crmCustomer: 'Customers',
@@ -163,7 +166,25 @@ export default {
     systemWorkflowDesigner: 'Workflow Designer',
     systemDataImport: 'Data Import/Export',
     systemApiGateway: 'API Gateway',
-    systemMonitor: 'Monitoring'
+    systemMonitor: 'Monitoring',
+    hr: 'Human Resources',
+    hrEmployee: 'Employees',
+    hrOrganization: 'Organization',
+    hrRecruitPosition: 'Recruit Positions',
+    hrRecruitResume: 'Resumes',
+    hrRecruitInterview: 'Interviews',
+    hrTrainingCourse: 'Training Courses',
+    hrTrainingPlan: 'Training Plans',
+    hrTrainingRecord: 'Training Records',
+    hrAttendanceClock: 'Clock Records',
+    hrAttendanceSchedule: 'Shift Schedule',
+    hrAttendanceStatistics: 'Attendance Stats',
+    hrPerformanceKpi: 'KPI Settings',
+    hrPerformanceAssessment: 'Assessments',
+    hrPerformanceScore: 'Score Management',
+    hrSalaryCalculation: 'Salary Calculation',
+    hrSalaryTax: 'Tax Management',
+    hrInsurance: 'Insurance & Fund'
   },
 
   // Login
