@@ -2,57 +2,90 @@
   <div class="page-container">
     <BaseSearch :search-items="searchItems" @search="handleSearch" @reset="handleReset" />
     <div class="table-toolbar">
-      <div class="toolbar-left"><el-button type="primary" :icon="Plus" @click="handleAdd">新增库区</el-button></div>
+      <div class="toolbar-left"><el-button type="primary" :icon="Plus" @click="handleAdd">{{ t('wms.area.add') }}</el-button></div>
       <div class="toolbar-right"><el-button :icon="Refresh" circle @click="loadData" /></div>
     </div>
     <BaseTable :columns="columns" :table-data="tableData" :loading="loading" :total="total" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :show-index="true" @current-change="handlePageChange" @size-change="handleSizeChange">
       <template #status="{ row }"><BaseStatusTag :type="row.status === '启用' ? 'success' : 'info'">{{ row.status }}</BaseStatusTag></template>
       <template #type="{ row }"><el-tag :type="areaTypeMap[row.type]?.type || ''" size="small">{{ areaTypeMap[row.type]?.label || row.type }}</el-tag></template>
       <template #operation="{ row }">
-        <el-button v-for="action in getActions(row).slice(0, 3)" :key="action.key" :type="action.type" link size="small" @click="action.handler(row)">{{ action.label }}</el-button>
-        <el-dropdown v-if="getActions(row).length > 3" trigger="click" @command="(cmd) => handleCommand(cmd, row)">
-          <el-button type="primary" link size="small">更多<el-icon class="el-icon--right"><ArrowDown /></el-icon></el-button>
+        <el-button v-for="action in getActions(row).slice(0, 2)" :key="action.key" :type="action.type" link size="small" @click="action.handler(row)">{{ action.label }}</el-button>
+        <el-dropdown v-if="getActions(row).length > 2" trigger="click" @command="(cmd) => handleCommand(cmd, row)">
+          <el-button type="primary" link size="small">{{ t('wms.area.more') }}<el-icon class="el-icon--right"><ArrowDown /></el-icon></el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item v-for="action in getActions(row).slice(3)" :key="action.key" :command="action.key">{{ action.label }}</el-dropdown-item>
+              <el-dropdown-item v-for="action in getActions(row).slice(2)" :key="action.key" :command="action.key">{{ action.label }}</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
       </template>
     </BaseTable>
     <BaseDialog v-model="dialogVisible" :title="dialogTitle" width="500px" :confirm-loading="submitLoading" @confirm="handleSubmit" @cancel="cancelDialog"><BaseForm ref="formRef" v-model="formData" :form-items="formItems" :form-rules="formRules" /></BaseDialog>
-    <el-dialog v-model="viewVisible" title="库区详情" width="500px">
+    <el-dialog v-model="viewVisible" :title="t('wms.area.viewTitle')" width="500px">
       <el-descriptions v-if="viewRow" :column="2" border>
-        <el-descriptions-item label="编码">{{ viewRow.code }}</el-descriptions-item>
-        <el-descriptions-item label="名称">{{ viewRow.name }}</el-descriptions-item>
-        <el-descriptions-item label="所属仓库">{{ viewRow.warehouseName }}</el-descriptions-item>
-        <el-descriptions-item label="类型">{{ areaTypeMap[viewRow.type]?.label || viewRow.type }}</el-descriptions-item>
-        <el-descriptions-item label="容量">{{ viewRow.capacity }}</el-descriptions-item>
-        <el-descriptions-item label="状态">{{ viewRow.status }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间" :span="2">{{ viewRow.createTime }}</el-descriptions-item>
+        <el-descriptions-item :label="t('wms.area.form.codeLabel')">{{ viewRow.code }}</el-descriptions-item>
+        <el-descriptions-item :label="t('wms.area.form.nameLabel')">{{ viewRow.name }}</el-descriptions-item>
+        <el-descriptions-item :label="t('wms.area.warehouseName')">{{ viewRow.warehouseName }}</el-descriptions-item>
+        <el-descriptions-item :label="t('wms.area.form.typeLabel')">{{ areaTypeMap[viewRow.type]?.label || viewRow.type }}</el-descriptions-item>
+        <el-descriptions-item :label="t('wms.area.form.capacityLabel')">{{ viewRow.capacity }}</el-descriptions-item>
+        <el-descriptions-item :label="t('wms.area.status')">{{ viewRow.status }}</el-descriptions-item>
+        <el-descriptions-item :label="t('wms.area.createTime')" :span="2">{{ viewRow.createTime }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Refresh, ArrowDown } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
 import BaseSearch from '@/components/BaseSearch.vue'
 import BaseTable from '@/components/BaseTable.vue'
 import BaseDialog from '@/components/BaseDialog.vue'
 import BaseForm from '@/components/BaseForm.vue'
 import BaseStatusTag from '@/components/BaseStatusTag.vue'
 
-const areaTypeMap = { normal: { label: '普通区', type: '' }, cold: { label: '冷藏区', type: 'primary' }, hazardous: { label: '危险品区', type: 'danger' } }
-const searchItems = [ { prop: 'name', label: '名称', type: 'input' }, { prop: 'warehouseName', label: '所属仓库', type: 'input' } ]
-const columns = [ { prop: 'code', label: '编码', width: 120 }, { prop: 'name', label: '名称', width: 140 }, { prop: 'warehouseName', label: '所属仓库', width: 120 }, { prop: 'type', label: '类型', width: 100, slot: 'type' }, { prop: 'capacity', label: '容量', width: 80, align: 'center' }, { prop: 'status', label: '状态', width: 80, slot: 'status' }, { prop: 'createTime', label: '创建时间', width: 170 } ]
-const formItems = [ { prop: 'name', label: '名称', type: 'input' }, { prop: 'code', label: '编码', type: 'input' }, { prop: 'type', label: '类型', type: 'select', options: [{ value: 'normal', label: '普通区' }, { value: 'cold', label: '冷藏区' }, { value: 'hazardous', label: '危险品区' }] }, { prop: 'capacity', label: '容量', type: 'number' } ]
-const formRules = { name: [{ required: true, message: '请输入名称', trigger: 'blur' }] }
+const { t } = useI18n({ useScope: 'local' })
+
+const areaTypeMap = {
+  normal: { label: '普通区', type: '' },
+  cold: { label: '冷藏区', type: 'primary' },
+  hazardous: { label: '危险品区', type: 'danger' }
+}
+
+const searchItems = computed(() => [
+  { prop: 'name', label: t('wms.area.name'), type: 'input' },
+  { prop: 'warehouseName', label: t('wms.area.warehouseName'), type: 'input' }
+])
+
+const columns = computed(() => [
+  { prop: 'code', label: t('wms.area.code'), width: 120 },
+  { prop: 'name', label: t('wms.area.name'), width: 140 },
+  { prop: 'warehouseName', label: t('wms.area.warehouseName'), width: 120 },
+  { prop: 'type', label: t('wms.area.type'), width: 100, slot: 'type' },
+  { prop: 'capacity', label: t('wms.area.capacity'), width: 80, align: 'center' },
+  { prop: 'status', label: t('wms.area.status'), width: 80, slot: 'status' },
+  { prop: 'createTime', label: t('wms.area.createTime'), width: 170 }
+])
+
+const formItems = computed(() => [
+  { prop: 'name', label: t('wms.area.form.nameLabel'), type: 'input' },
+  { prop: 'code', label: t('wms.area.form.codeLabel'), type: 'input' },
+  { prop: 'type', label: t('wms.area.form.typeLabel'), type: 'select', options: [
+    { value: 'normal', label: t('wms.area.typeOptions.normal') },
+    { value: 'cold', label: t('wms.area.typeOptions.cold') },
+    { value: 'hazardous', label: t('wms.area.typeOptions.hazardous') }
+  ] },
+  { prop: 'capacity', label: t('wms.area.form.capacityLabel'), type: 'number' }
+])
+
+const formRules = computed(() => ({
+  name: [{ required: true, message: t('wms.area.required.name'), trigger: 'blur' }]
+}))
 
 const loading = ref(false), tableData = ref([]), total = ref(0)
-const dialogVisible = ref(false), dialogTitle = ref('新增库区'), submitLoading = ref(false), formRef = ref(null)
+const dialogVisible = ref(false), dialogTitle = ref(''), submitLoading = ref(false), formRef = ref(null)
 const viewVisible = ref(false), viewRow = ref(null)
 const queryParams = reactive({ pageNum: 1, pageSize: 10, name: '', warehouseName: '' })
 const formData = reactive({ id: undefined, name: '', code: '', type: 'normal', capacity: undefined })
@@ -79,20 +112,20 @@ function handleSearch(p) { Object.assign(queryParams, p, { pageNum: 1 }); loadDa
 function handleReset() { Object.keys(queryParams).forEach(k => { if (k !== 'pageNum' && k !== 'pageSize') queryParams[k] = '' }); loadData() }
 function handlePageChange(p) { queryParams.pageNum = p; loadData() }
 function handleSizeChange(s) { queryParams.pageSize = s; queryParams.pageNum = 1; loadData() }
-function handleAdd() { dialogTitle.value = '新增库区'; Object.keys(formData).forEach(k => formData[k] = ''); formData.id = undefined; formData.type = 'normal'; dialogVisible.value = true }
+function handleAdd() { dialogTitle.value = t('wms.area.addTitle'); Object.keys(formData).forEach(k => formData[k] = ''); formData.id = undefined; formData.type = 'normal'; dialogVisible.value = true }
 function handleView(row) { viewRow.value = row; viewVisible.value = true }
-function handleEdit(r) { dialogTitle.value = '编辑库区'; Object.assign(formData, r); dialogVisible.value = true }
-function handleToggle(row) { row.status = row.status === '启用' ? '停用' : '启用'; ElMessage.success(`${row.status === '启用' ? '启用' : '停用'}成功`) }
+function handleEdit(r) { dialogTitle.value = t('wms.area.editTitle'); Object.assign(formData, r); dialogVisible.value = true }
+function handleToggleStatus(row) { row.status = row.status === '启用' ? '停用' : '启用'; ElMessage.success(`${row.status === '启用' ? t('wms.area.enableSuccess') : t('wms.area.disableSuccess')}`) }
 function cancelDialog() { dialogVisible.value = false; formRef.value?.resetFields() }
-async function handleSubmit() { const valid = await formRef.value?.validate().catch(() => false); if (!valid) return; submitLoading.value = true; try { await new Promise(r => setTimeout(r, 500)); ElMessage.success('操作成功'); dialogVisible.value = false; loadData() } catch { ElMessage.error('操作失败') } finally { submitLoading.value = false } }
-async function handleDelete(row) { await ElMessageBox.confirm(`确定删除「${row.name}」?`, '提示', { type: 'warning' }); ElMessage.success('删除成功'); loadData() }
+async function handleSubmit() { const valid = await formRef.value?.validate().catch(() => false); if (!valid) return; submitLoading.value = true; try { await new Promise(r => setTimeout(r, 500)); ElMessage.success(t('wms.area.operationSuccess')); dialogVisible.value = false; loadData() } catch { ElMessage.error(t('wms.area.operationFailed')) } finally { submitLoading.value = false } }
+async function handleDelete(row) { await ElMessageBox.confirm(t('wms.area.confirmDelete', { name: row.name }), t('wms.area.prompt'), { type: 'warning' }); ElMessage.success(t('wms.area.deleteSuccess')); loadData() }
 function getActions(row) {
   const actions = [
-    { key: 'view', label: '查看', type: 'primary', handler: handleView },
-    { key: 'edit', label: '编辑', type: 'primary', handler: handleEdit }
+    { key: 'view', label: t('wms.area.view'), type: 'primary', handler: handleView },
+    { key: 'edit', label: t('wms.area.edit'), type: 'primary', handler: handleEdit }
   ]
-  actions.push({ key: 'toggle', label: row.status === '启用' ? '停用' : '启用', type: 'warning', handler: handleToggle })
-  actions.push({ key: 'delete', label: '删除', type: 'danger', handler: handleDelete })
+  actions.push({ key: 'toggle', label: row.status === '启用' ? t('wms.area.disable') : t('wms.area.enable'), type: 'warning', handler: handleToggleStatus })
+  actions.push({ key: 'delete', label: t('wms.area.delete'), type: 'danger', handler: handleDelete })
   return actions
 }
 function handleCommand(cmd, row) { getActions(row).find(a => a.key === cmd)?.handler(row) }
