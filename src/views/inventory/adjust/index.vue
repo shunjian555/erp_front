@@ -9,10 +9,15 @@
       <template #adjustType="{ row }"><el-tag :type="row.adjustType === 'increase' ? 'success' : 'danger'" size="small">{{ row.adjustType === 'increase' ? t('inventory.adjustIncrease') : t('inventory.adjustDecrease') }}</el-tag></template>
       <template #status="{ row }"><BaseStatusTag :type="row.status === 1 ? 'success' : 'warning'">{{ row.status === 1 ? t('inventory.statusCompleted') : t('inventory.statusPending') }}</BaseStatusTag></template>
       <template #operation="{ row }">
-        <el-button type="primary" link size="small" @click="handleView(row)">{{ t('common.detail') }}</el-button>
-        <el-button v-if="row.status === 0" type="primary" link size="small" @click="handleEdit(row)">{{ t('common.edit') }}</el-button>
-        <el-button v-if="row.status === 0" type="success" link size="small" @click="handleApprove(row)">{{ t('inventory.adjustApprove') }}</el-button>
-        <el-button v-if="row.status === 0" type="danger" link size="small" @click="handleDelete(row)">{{ t('common.delete') }}</el-button>
+        <el-button v-for="action in getActions(row).slice(0, 2)" :key="action.key" :type="action.type" link size="small" @click="action.handler(row)">{{ action.label }}</el-button>
+        <el-dropdown v-if="getActions(row).length > 2" trigger="click" @command="(cmd) => handleCommand(cmd, row)">
+          <el-button type="primary" link size="small">{{ t('common.moreActions') }}<el-icon class="el-icon--right"><ArrowDown /></el-icon></el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item v-for="action in getActions(row).slice(2)" :key="action.key" :command="action.key">{{ action.label }}</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </template>
     </BaseTable>
 
@@ -39,7 +44,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Refresh } from '@element-plus/icons-vue'
+import { Plus, Refresh, ArrowDown } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import BaseSearch from '@/components/BaseSearch.vue'
 import BaseTable from '@/components/BaseTable.vue'
@@ -102,6 +107,16 @@ async function handleDelete(r) {
   ElMessage.success(t('common.deleteSuccess'))
   loadData()
 }
+function getActions(row) {
+  const actions = [{ key: 'view', label: t('common.detail'), type: 'primary', handler: handleView }]
+  if (row.status === 0) {
+    actions.push({ key: 'edit', label: t('common.edit'), type: 'primary', handler: handleEdit })
+    actions.push({ key: 'approve', label: t('inventory.adjustApprove'), type: 'success', handler: handleApprove })
+    actions.push({ key: 'delete', label: t('common.delete'), type: 'danger', handler: handleDelete })
+  }
+  return actions
+}
+function handleCommand(cmd, row) { const action = getActions(row).find(a => a.key === cmd); action?.handler(row) }
 function cancelDialog() { dialogVisible.value = false; formRef.value?.resetFields() }
 async function handleSubmit() { const valid = await formRef.value?.validate().catch(() => false); if (!valid) return; submitLoading.value = true; try { await request({ url: '/api/inventory/adjust/save', method: 'post', data: formData }); ElMessage.success(t('inventory.adjustSaveSuccess')); dialogVisible.value = false; loadData() } catch { ElMessage.error(t('inventory.adjustSaveFailed')) } finally { submitLoading.value = false } }
 onMounted(() => loadData())

@@ -9,9 +9,15 @@
       <template #status="{ row }"><BaseStatusTag type="danger">{{ t('inventory.warningStatus') }}</BaseStatusTag></template>
       <template #level="{ row }"><el-tag :type="levelMap[row.level]?.type || 'info'" size="small">{{ levelMap[row.level]?.label || row.level }}</el-tag></template>
       <template #operation="{ row }">
-        <el-button type="primary" link size="small" @click="handleView(row)">{{ t('common.detail') }}</el-button>
-        <el-button type="warning" link size="small" @click="handleAdjust(row)">{{ t('inventory.adjust') }}</el-button>
-        <el-button type="success" link size="small" @click="handlePurchase(row)">{{ t('inventory.purchaseReplenish') }}</el-button>
+        <el-button v-for="action in getActions(row).slice(0, 2)" :key="action.key" :type="action.type" link size="small" @click="action.handler(row)">{{ action.label }}</el-button>
+        <el-dropdown v-if="getActions(row).length > 2" trigger="click" @command="(cmd) => handleCommand(cmd, row)">
+          <el-button type="primary" link size="small">{{ t('common.moreActions') }}<el-icon class="el-icon--right"><ArrowDown /></el-icon></el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item v-for="action in getActions(row).slice(2)" :key="action.key" :command="action.key">{{ action.label }}</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </template>
     </BaseTable>
 
@@ -68,7 +74,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Download, Refresh } from '@element-plus/icons-vue'
+import { Download, Refresh, ArrowDown } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import BaseSearch from '@/components/BaseSearch.vue'
 import BaseTable from '@/components/BaseTable.vue'
@@ -125,6 +131,14 @@ function handleSearch(p) { Object.assign(queryParams, p, { pageNum: 1 }); loadDa
 function handleReset() { Object.keys(queryParams).forEach(k => { if (k !== 'pageNum' && k !== 'pageSize') queryParams[k] = '' }); loadData() }
 function handlePageChange(p) { queryParams.pageNum = p; loadData() }
 function handleSizeChange(s) { queryParams.pageSize = s; queryParams.pageNum = 1; loadData() }
+function getActions(row) {
+  return [
+    { key: 'view', label: t('common.detail'), type: 'primary', handler: handleView },
+    { key: 'adjust', label: t('inventory.adjust'), type: 'warning', handler: handleAdjust },
+    { key: 'purchase', label: t('inventory.purchaseReplenish'), type: 'success', handler: handlePurchase }
+  ]
+}
+function handleCommand(cmd, row) { const action = getActions(row).find(a => a.key === cmd); action?.handler(row) }
 function handleView(row) { viewRow.value = row; viewVisible.value = true }
 function handleAdjust(row) {
   adjustRow.value = row

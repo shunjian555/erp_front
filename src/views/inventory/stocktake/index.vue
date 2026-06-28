@@ -8,10 +8,15 @@
     <BaseTable :columns="columns" :table-data="tableData" :loading="loading" :total="total" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :show-index="true" @current-change="handlePageChange" @size-change="handleSizeChange">
       <template #status="{ row }"><el-tag :type="stocktakeStatusMap[row.status]?.type || 'info'" size="small">{{ stocktakeStatusMap[row.status]?.label || '—' }}</el-tag></template>
       <template #operation="{ row }">
-        <el-button type="primary" link size="small" @click="handleView(row)">{{ t('common.detail') }}</el-button>
-        <el-button v-if="row.status === 0" type="primary" link size="small" @click="handleStart(row)">{{ t('inventory.startStocktake') }}</el-button>
-        <el-button v-if="row.status === 1" type="success" link size="small" @click="handleFinish(row)">{{ t('inventory.finishStocktake') }}</el-button>
-        <el-button v-if="row.status === 0 || row.status === 1" type="danger" link size="small" @click="handleCancel(row)">{{ t('inventory.cancelStocktake') }}</el-button>
+        <el-button v-for="action in getActions(row).slice(0, 2)" :key="action.key" :type="action.type" link size="small" @click="action.handler(row)">{{ action.label }}</el-button>
+        <el-dropdown v-if="getActions(row).length > 2" trigger="click" @command="(cmd) => handleCommand(cmd, row)">
+          <el-button type="primary" link size="small">{{ t('common.moreActions') }}<el-icon class="el-icon--right"><ArrowDown /></el-icon></el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item v-for="action in getActions(row).slice(2)" :key="action.key" :command="action.key">{{ action.label }}</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </template>
     </BaseTable>
     <BaseDialog v-model="dialogVisible" :title="t('inventory.addStocktake')" width="550px" :confirm-loading="submitLoading" @confirm="handleSubmit" @cancel="cancelDialog"><BaseForm ref="formRef" v-model="formData" :form-items="formItems" :form-rules="formRules" /></BaseDialog>
@@ -36,7 +41,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Refresh } from '@element-plus/icons-vue'
+import { Plus, Refresh, ArrowDown } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import BaseSearch from '@/components/BaseSearch.vue'
 import BaseTable from '@/components/BaseTable.vue'
@@ -92,6 +97,19 @@ function handleView(r) { viewRow.value = r; viewVisible.value = true }
 async function handleStart(r) { await ElMessageBox.confirm(t('inventory.startConfirm', { no: r.stocktakeNo }), t('common.hint'), { type: 'warning' }); await request({ url: '/api/inventory/stocktake/start', method: 'post', data: { id: r.id } }).catch(() => {}); ElMessage.success(t('inventory.startSuccess')); loadData() }
 async function handleFinish(r) { await ElMessageBox.confirm(t('inventory.finishConfirm', { no: r.stocktakeNo }), t('common.hint'), { type: 'warning' }); await request({ url: '/api/inventory/stocktake/finish', method: 'post', data: { id: r.id } }).catch(() => {}); ElMessage.success(t('inventory.finishSuccess')); loadData() }
 async function handleCancel(r) { await ElMessageBox.confirm(t('inventory.cancelConfirm', { no: r.stocktakeNo }), t('common.hint'), { type: 'warning' }); await request({ url: '/api/inventory/stocktake/cancel', method: 'post', data: { id: r.id } }).catch(() => {}); ElMessage.success(t('inventory.cancelSuccess')); loadData() }
+function getActions(row) {
+  const actions = [{ key: 'view', label: t('common.detail'), type: 'primary', handler: handleView }]
+  if (row.status === 0) {
+    actions.push({ key: 'start', label: t('inventory.startStocktake'), type: 'primary', handler: handleStart })
+    actions.push({ key: 'cancel', label: t('inventory.cancelStocktake'), type: 'danger', handler: handleCancel })
+  }
+  if (row.status === 1) {
+    actions.push({ key: 'finish', label: t('inventory.finishStocktake'), type: 'success', handler: handleFinish })
+    actions.push({ key: 'cancel', label: t('inventory.cancelStocktake'), type: 'danger', handler: handleCancel })
+  }
+  return actions
+}
+function handleCommand(cmd, row) { const action = getActions(row).find(a => a.key === cmd); action?.handler(row) }
 function cancelDialog() { dialogVisible.value = false; formRef.value?.resetFields() }
 async function handleSubmit() { const valid = await formRef.value?.validate().catch(() => false); if (!valid) return; submitLoading.value = true; try { await request({ url: '/api/inventory/stocktake/save', method: 'post', data: formData }); ElMessage.success(t('inventory.createSuccess')); dialogVisible.value = false; loadData() } catch { ElMessage.error(t('inventory.createFailed')) } finally { submitLoading.value = false } }
 onMounted(() => loadData())
